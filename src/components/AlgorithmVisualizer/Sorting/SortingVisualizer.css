@@ -1,0 +1,76 @@
+.visualizer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.array-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Ensure bars and boxes are centered */
+}
+
+.bar-box-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Align bars and boxes vertically */
+}
+
+.bar-visualization,
+.box-visualization {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin-bottom: 20px; /* Add space between bar and box */
+}
+
+/* .array-bar {
+  width: 100px;
+  margin: 0 2px;
+  background-color: #73d2de;
+  transition: height 0.3s ease;
+} */
+
+.array-box {
+  width: 40px;
+  margin: 0 2px;
+  background-color: #007bff;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  color: white;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.array-box.comparing,
+.array-bar.comparing {
+  background-color: #ffc107;
+}
+
+.array-box.swapping,
+.array-bar.swapping {
+  background-color: #dc3545;
+}
+
+.array-box.sorted,
+.array-bar.sorted {
+  background-color: #28a745;
+}

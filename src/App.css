@@ -1,0 +1,27 @@
+.app {
+  font-family: Arial, sans-serif;
+  background-color: #212121;
+  color: #333;
+}
+
+.home, .data-structures, .algorithms {
+  padding: 20px;
+  
+}
+
+.ds-item, .alg-item {
+  width: 90px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.enlarged {
+  width: 300px;
+  border-radius: 20px;
+  transform: scale(1.01);
+  background-color: #f0f8ff; /* Light background color for enlarged items */
+}
+

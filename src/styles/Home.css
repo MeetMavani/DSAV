@@ -1,0 +1,57 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+.home {
+  font-family: 'Archivo', sans-serif;
+  padding: 40px; /* Increased padding for more space */
+  color: #333; /* Text color */
+  text-align: center; /* Center the main heading */
+  font-family: 'Arial', sans-serif; /* Set a clean, readable font */
+  z-index: inherit;
+}
+
+.home h1{
+  color: #FF98A2;
+  font-size: 100px
+}
+
+.home h3 {
+  font-size: 2rem; /* Font size for subheadings */
+  margin-top: 30px; /* Space above subheadings */
+  margin-bottom: 15px; /* Space below subheadings */
+  color: #eea1a7; /* Darker blue for subheadings */
+}
+
+.home p {
+  font-size: 1.2rem; /* Font size for paragraphs */
+  line-height: 1.8; /* Increased line height for better readability */
+  margin: 15px 0; /* Space above and below paragraphs */
+  max-width: 800px; /* Set max width for paragraph content */
+  margin-left: auto; /* Center align paragraphs */
+  margin-right: auto; /* Center align paragraphs */
+  padding: 0 20px; /* Padding for smaller screens */
+  color: #cacfd3;
+}
+
+.home::before {
+  content: ""; /* Decorative element before the content */
+  display: block;
+  height: 4px; /* Height of the decorative line */
+  width: 80%; /* Width of the decorative line */
+  background-color: #e7cbd0; /* Color of the decorative line */
+  margin: 0 auto 30px; /* Center the line and space below */
+}
+
+@media (max-width: 768px) {
+  .home h2 {
+    font-size: 2.5rem; /* Responsive font size for smaller screens */
+  }
+
+  .home h3 {
+    font-size: 1.8rem; /* Responsive font size for subheadings */
+  }
+
+  .home p {
+    font-size: 1rem; /* Responsive font size for paragraphs */
+  }
+}

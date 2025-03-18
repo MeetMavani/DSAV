@@ -1,0 +1,33 @@
+.navbar {
+    background-color: #100A0B; /* Navbar background color */
+    color: white;
+    padding: 15px 20px; /* Top and bottom padding, left and right padding */
+    display: flex;
+    justify-content: space-between; /* Space between title and nav items */
+    align-items: center; /* Center items vertically */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    border: 1px solid rgb(68, 62, 62);
+  }
+  
+  .navbar h1 {
+    margin: 0; /* Remove default margin */
+    font-size: 1.5rem; /* Font size for the title */
+  }
+  
+  .navbar ul {
+    list-style-type: none; /* Remove default list style */
+    display: flex; /* Flexbox for horizontal layout */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+  }
+  
+  .navbar li {
+    margin: 0 15px; /* Space between nav items */
+    cursor: pointer; /* Change cursor to pointer */
+    transition: color 0.3s; /* Smooth color transition */
+  }
+  
+  .navbar li:hover {
+    text-decoration: underline; /* Underline text on hover */
+  }
+  
