@@ -46,7 +46,7 @@ const CodeBox = () => {
   };
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg shadow-lg mt-8">
+    <div className="bg-gray-900 p-6 rounded-lg shadow-lg mt-8 w-3xl">
       <h3 className="text-xl font-semibold mb-4 text-white">Algorithm Code</h3>
 
       {/* Language Selector */}

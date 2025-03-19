@@ -7,24 +7,82 @@ import { useState } from 'react';
 
 const QuickSort = () => {
 
-  const [array, setArray] = useState([5, 3, 8, 4, 2]);
-  const [highlighted, setHighlighted] = useState([]);
 
-  const simulateOnePass = () => {
-    let newArray = [...array];
-    let newHighlighted = [];
+  const questions = [
+    {
+      question: "What is the best-case time complexity of Bubble Sort?",
+      options: ["O(n)", "O(n²)", "O(1)", "O(log n)"],
+      answer: "O(n)",
+    },
+    {
+      question: "After the first pass, which element is in the correct position?",
+      options: ["Smallest", "Largest", "Middle", "None"],
+      answer: "Largest",
+    },
+    {
+      question: "What is the output of Bubble Sort on [3, 1, 2]?",
+      options: ["[1, 2, 3]", "[3, 1, 2]", "[1, 3, 2]", "[2, 1, 3]"],
+      answer: "[1, 2, 3]",
+    },
+  ];
 
-    for (let i = 0; i < newArray.length - 1; i++) {
-      newHighlighted.push(i);
-      if (newArray[i] > newArray[i + 1]) {
-        [newArray[i], newArray[i + 1]] = [newArray[i + 1], newArray[i]];
-      }
+  const initialArray = [8, 11, 6, 10, 2];
+  const [array, setArray] = useState(initialArray);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+
+  const startSimulation = () => {
+    setIsRunning(true);
+    setCurrentIndex(0);
+    simulatePass();
+  };
+
+  const resetSimulation = () => {
+    setIsRunning(false);
+    setArray(initialArray);
+    setCurrentIndex(0);
+  };
+
+  const simulatePass = () => {
+    if (currentIndex >= array.length - 1) {
+      setIsRunning(false);
+      return;
     }
 
-    setArray(newArray);
-    setHighlighted(newHighlighted);
+    setTimeout(() => {
+      setArray((prevArray) => {
+        const newArray = [...prevArray];
+        if (newArray[currentIndex] > newArray[currentIndex + 1]) {
+          [newArray[currentIndex], newArray[currentIndex + 1]] = [
+            newArray[currentIndex + 1],
+            newArray[currentIndex],
+          ];
+        }
+        return newArray;
+      });
 
-    setTimeout(() => setHighlighted([]), 1000); // Clear highlights after 1 second
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+      simulatePass();
+    }, 800);
+  };
+
+  const [score, setScore] = useState(0);
+  const [userAnswers, setUserAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleOptionChange = (index, option) => {
+    setUserAnswers({ ...userAnswers, [index]: option });
+  };
+
+  const handleSubmit = () => {
+    let newScore = 0;
+    questions.forEach((q, index) => {
+      if (userAnswers[index] === q.answer) {
+        newScore++;
+      }
+    });
+    setScore(newScore);
+    setSubmitted(true);
   };
 
 
@@ -60,7 +118,7 @@ const QuickSort = () => {
 
       
         
-          
+        {/* How it works */}  
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">
             How does Bubble Sort work?
@@ -74,6 +132,8 @@ const QuickSort = () => {
         </section>
 
         <hr />
+
+        {/* Manual Run through */}
         <section className="mt-8">
 
           <h2 className="text-2xl font-bold mb-4">Manual Run Through</h2>
@@ -113,23 +173,42 @@ const QuickSort = () => {
 
         <hr />
 
-        <section className='max-w-3xl mx-auto mb-12 mt-8'>
-            <h2 className="text-2xl text-center font-semibold mb-4"> Run the simulation below to see the 8 steps above animated:</h2>
-            <div className="bg-white p-6 rounded-lg shadow-md text-center text-gray-500">
-              {array.map((num, index) => (
-              <span
+        {/* Simulation */}
+        <section className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4">🔍 Bubble Sort Simulation (One Pass)</h2>
+          <div className="flex space-x-4 mb-6">
+            {array.map((num, index) => (
+              <div
                 key={index}
-                className={`array-item ${highlighted.includes(index) ? 'highlight' : ''}`}
+                className={`array-box ${
+                  isRunning && (index === currentIndex || index === currentIndex + 1)
+                    ? "highlight"
+                    : ""
+                }`}
               >
                 {num}
-              </span>
-              ))}
-              <button onClick={simulateOnePass} className="simulate-button bg-blue-200 rounded-3xl p-2 ml-2">Simulate One Pass</button>
-            </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={startSimulation}
+            disabled={isRunning}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-800"
+          >
+            Start Simulation
+          </button>
+          <button
+            onClick={resetSimulation}
+            className="ml-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-800"
+          >
+            Reset
+          </button>
         </section>
                       
         <hr />
         
+        {/* Implementation */}
         <section className="mt-8">
           <p className="mb-4">
             Now that we understand how Bubble Sort works, let's dive into the actual implementation in a programming language.
@@ -174,61 +253,86 @@ const QuickSort = () => {
         </section>
 
           
-          <CodeBox />
+        <CodeBox />
 
-          <h2>
-            <span>Complexity Analysis of Bubble Sort:</span>
-          </h2>
-          <p>
-            <b>
-              <strong>Time Complexity:</strong>
-            </b>
-            <span>O(n</span>
-            <sup>2</sup>
-            <span>)</span>
-            <br />
-            <b>
-              <strong>Time Complexity:</strong>
-            </b>
-            <span>O(1)</span>
-            <br />
-            <span>Please refer </span>
-            <a href="">
-              <span>Complexity Analysis of Bubble Sort </span>
-            </a>
-            <span>for details.</span>
-          </p>
+        {/* Complexity */}
+        <section className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Complexity Analysis of Bubble Sort:</h2>
 
-          <div className='Exercise'>
-              <h2>DSA Exercises</h2>
-              <form action="">
-                <h2>Test Yourself With Exercises</h2>
-                <div className='exercisewindow'>
-                  <h2>Exercise:</h2>
-                  <p>Using Bubble Sort on this array:</p>
-                  <code>[7,14,11,8,9]</code>
-                  <p>To sort the values from left to right in an increasing (ascending) order.</p>
-                  <p>How does the array look like after the FIRST run through?</p>
-                  <div className='exercisecontainer'>
-                    <pre>
-                      [
-                      <input name="box1" maxLength="2"  type="text" />
-                      ,
-                      <input name="box2" maxLength="2"  type="text" />
-                      ,
-                      <input name="box3" maxLength="2"  type="text" />
-                      ,
-                      <input name="box4" maxLength="2"  type="text" />
-                      ,
-                      <input name="box5" maxLength="2"  type="text" />
-                      ]
-                    </pre>
-                  </div>
-                  <br />
-                  <button>Submit Answer</button>
-                </div>
-              </form>
-           </div>
+            <p className="mb-4">
+              <strong>Time Complexity:</strong> <span>O(n<sup>2</sup>)</span>
+            </p>
+
+            <p className="mb-4">
+              <strong>Space Complexity:</strong> <span>O(1)</span>
+            </p>
+
+            <p>
+              For a deeper dive, please refer to the{" "}
+              <a
+                href="https://www.geeksforgeeks.org/bubble-sort/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Complexity Analysis of Bubble Sort
+              </a>.
+            </p>
+        </section>
+            
+        {/* Exercise */}
+        <section className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4">🧠 Bubble Sort Exercises</h2>
+
+          {questions.map((q, index) => {
+            const userAnswer = userAnswers[index];
+            const isCorrect = userAnswer === q.answer;
+
+            return (
+              <div key={index} className="mb-6">
+                <p className="font-medium">{q.question}</p>
+
+                {q.options.map((option) => {
+                  const isSelected = userAnswer === option;
+                  const isWrong = submitted && isSelected && !isCorrect;
+                  const isRight = submitted && option === q.answer;
+
+                  return (
+                    <label
+                      key={option}
+                      className={`block p-1 rounded ${
+                        isRight ? "bg-green-200" : isWrong ? "bg-red-200" : ""
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name={`question-${index}`}
+                        value={option}
+                        onChange={() => handleOptionChange(index, option)}
+                        disabled={submitted}
+                      />
+                      <span className="ml-2">{option}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            );
+          })}
+
+          {!submitted ? (
+            <button
+              onClick={handleSubmit}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-800"
+            >
+              Submit Answers
+            </button>
+          ) : (
+            <p className="mt-4 font-bold">
+              Your Score: {score} / {questions.length}
+            </p>
+          )}
+        </section>
+
     </section>
   )
 }
