@@ -1,5 +1,6 @@
 // import StarryBackground from '../../components/StarryBackground'
 import SortingVisualizer from "../../components/AlgorithmVisualizer/Sorting/SortingVisualizer"
+import { BubbleSortCodeSnippets } from "../../utils/sortingAlgorithms";
 import CodeBox from '../../components/Shared/CodeBox'
 import { useState } from 'react';
 
@@ -119,8 +120,6 @@ const BubbleSort = () => {
         </li>
       </ul>
 
-      
-        
         {/* How it works */}  
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -260,7 +259,7 @@ const BubbleSort = () => {
         </section>
 
           
-        <CodeBox />
+        <CodeBox codeSnippets={BubbleSortCodeSnippets}/>
 
         {/* Complexity */}
         <section className="mt-8">
