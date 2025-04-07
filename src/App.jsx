@@ -5,6 +5,7 @@ import DataStructures from './pages/DataStructures';
 import Algorithms from './pages/Algorithms';
 import BubbleSort from './pages/Sort/BubbleSort';
 import QuickSort from './pages/Sort/QuickSort';
+import Array from './pages/DataStructures/Array'
 
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/algorithms" element={<Algorithms />} />
         <Route path="/BubbleSort" element={<BubbleSort />} />
         <Route path="/QuickSort" element={<QuickSort />} />
+        <Route path="/Array" element={<Array />} />
       </Routes>
     </Router>
   );

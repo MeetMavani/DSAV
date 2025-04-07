@@ -1,5 +1,3 @@
-import './new.css'
-// import StarryBackground from '../../components/StarryBackground'
 import SortingVisualizer from "../../components/AlgorithmVisualizer/Sorting/SortingVisualizer"
 import CodeBox from '../../components/Shared/CodeBox'
 import { useState } from 'react';
@@ -26,49 +24,6 @@ const QuickSort = () => {
     },
   ];
 
-  const initialArray = [5, 3, 8, 1, 4]; // Adjust the array for better visualization
-  const [array, setArray] = useState([...initialArray]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-
-  const startSimulation = () => {
-    if (isRunning) return; // Prevent multiple clicks
-    setIsRunning(true);
-    console.log("Simulation Started");
-    simulatePass();
-  };
-
-  const resetSimulation = () => {
-    setArray([...initialArray]);
-    setCurrentIndex(0);
-    setIsRunning(false);
-    console.log("Simulation Reset");
-  };
-
-  const simulatePass = () => {
-    let i = 0;
-    const len = array.length;
-
-    const interval = setInterval(() => {
-      if (i >= len - 1) {
-        clearInterval(interval);
-        setIsRunning(false);
-        console.log("Simulation Complete");
-        return;
-      }
-
-      setArray((prevArray) => {
-        const newArray = [...prevArray];
-        if (newArray[i] > newArray[i + 1]) {
-          [newArray[i], newArray[i + 1]] = [newArray[i + 1], newArray[i]];
-        }
-        return newArray;
-      });
-
-      setCurrentIndex(i);
-      i++;
-    }, 1000);
-  };
 
   const [score, setScore] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
@@ -91,19 +46,19 @@ const QuickSort = () => {
 
 
   return (
-    <section className="flex flex-col items-center px-4 py-8 md:px-12 lg:px-24">
+    <section className="flex flex-col max-w-7xl mx-auto px-4 py-8 md:px-12 lg:px-24 bg-blue-100">
       {/* Big Heading */}
-      <h1 className="text-4xl md:text-6xl font-bold text-center mb-8">Bubble Sort</h1>
+      <h1 className="text-4xl md:text-6xl font-bold text-center mb-8">Quick Sort</h1>
 
       {/* Introduction */}
-      <p className="text-lg md:text-xl text-gray-700 mb-6 max-w-3xl text-center">
-        <strong>Bubble Sort</strong> is a simple sorting algorithm that repeatedly
+      <p className="text-lg md:text-xl text-gray-700 mb-6 text-center">
+        <strong>Quick Sort</strong> is a simple sorting algorithm that repeatedly
         swaps adjacent elements if they are in the wrong order. It’s not suitable for
         large datasets due to its high average and worst-case time complexity.
       </p>
 
       {/* Key Points */}
-      <ul className="list-disc text-gray-600 space-y-4 max-w-3xl text-left">
+      <ul className="list-disc text-gray-600 space-y-4 text-left">
         <li>
           We sort the array using multiple passes. After the first pass, the
           maximum element moves to the end (its correct position). This process
@@ -178,48 +133,13 @@ const QuickSort = () => {
         <hr />
 
         <SortingVisualizer/>
-
-        {/* Simulation */}
-        {/* <section className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Bubble Sort: One Pass Simulation</h2>
-
-<div className="flex space-x-4 mb-6">
-  {array.map((value, index) => (
-    <div
-      key={index}
-      className={`p-4 border rounded ${
-        index === currentIndex || index === currentIndex + 1
-          ? "bg-blue-500 text-white"
-          : "bg-gray-200"
-      }`}
-    >
-      {value}
-    </div>
-  ))}
-</div>
-
-<button
-  onClick={startSimulation}
-  disabled={isRunning}
-  className="mr-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-800"
->
-  Start Simulation
-</button>
-
-<button
-  onClick={resetSimulation}
-  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-800"
->
-  Reset
-</button>
-        </section> */}
                       
         <hr />
         
         {/* Implementation */}
         <section className="mt-8">
           <p className="mb-4">
-            Now that we understand how Bubble Sort works, let's dive into the actual implementation in a programming language.
+            Now that we understand how Bubble Sort works, let&apos;s dive into the actual implementation in a programming language.
           </p>
 
           <h2 className="text-2xl font-bold mb-4">Bubble Sort Implementation</h2>
@@ -245,7 +165,7 @@ const QuickSort = () => {
           </ol>
 
           <p className="mt-6">
-            Here's a simple breakdown:
+            Here&aposs a simple breakdown:
           </p>
 
           <div className="bg-gray-100 p-4 rounded-lg mt-4">

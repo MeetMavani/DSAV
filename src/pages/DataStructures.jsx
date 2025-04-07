@@ -29,7 +29,7 @@ const DataStructures = () => {
             <p>
               {ds.description}
               <br />
-              <a href={`/learn/${ds.name}`}>Click to learn about {ds.name}</a>
+              <a href={`/${ds.name}`}>Click to learn about {ds.name}</a>
             </p>
           )}
         </div>
