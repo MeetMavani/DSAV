@@ -64,6 +64,87 @@ export const insertionSort = (array) => {
     return animations;
 };
 
+export const mergeSort = (array) => {
+  const animations = [];
+  const arr = [...array];
+  const helper = Array(arr.length);
+
+  const merge = (start, mid, end) => {
+    let i = start;
+    let j = mid + 1;
+    let k = start;
+
+    while (i <= mid && j <= end) {
+      animations.push({ type: 'compare', indices: [i, j], array: [...arr] });
+      if (arr[i] <= arr[j]) {
+        helper[k++] = arr[i++];
+      } else {
+        helper[k++] = arr[j++];
+      }
+    }
+
+    while (i <= mid) {
+      helper[k++] = arr[i++];
+    }
+
+    while (j <= end) {
+      helper[k++] = arr[j++];
+    }
+
+    for (let l = start; l <= end; l++) {
+      arr[l] = helper[l];
+      animations.push({ type: 'swap', indices: [l], array: [...arr] });
+    }
+  };
+
+  const mergeSortRecursive = (start, end) => {
+    if (start < end) {
+      const mid = Math.floor((start + end) / 2);
+      mergeSortRecursive(start, mid);
+      mergeSortRecursive(mid + 1, end);
+      merge(start, mid, end);
+    }
+  };
+
+  mergeSortRecursive(0, arr.length - 1);
+  return animations;
+};
+
+export const quickSort = (array) => {
+  const animations = [];
+  const arr = [...array];
+
+  const partition = (low, high) => {
+    const pivot = arr[high];
+    let i = low - 1;
+
+    for (let j = low; j < high; j++) {
+      animations.push({ type: 'compare', indices: [j, high], array: [...arr] });
+      if (arr[j] < pivot) {
+        i++;
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+        animations.push({ type: 'swap', indices: [i, j], array: [...arr] });
+      }
+    }
+
+    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+    animations.push({ type: 'swap', indices: [i + 1, high], array: [...arr] });
+    return i + 1;
+  };
+
+  const quickSortRecursive = (low, high) => {
+    if (low < high) {
+      const pivotIndex = partition(low, high);
+      quickSortRecursive(low, pivotIndex - 1);
+      quickSortRecursive(pivotIndex + 1, high);
+    }
+  };
+
+  quickSortRecursive(0, arr.length - 1);
+  return animations;
+};
+
+
 
 export const BubbleSortCodeSnippets = {
     JavaScript: `function bubbleSort(arr) {
@@ -187,4 +268,131 @@ export const SelectionSortSnippets = {
       }
     }
   }`
-  };
+};
+
+export const InsertionSortCodeSnippets = {
+    JavaScript: `function insertionSort(arr) {
+    for (let i = 1; i < arr.length; i++) {
+      let key = arr[i];
+      let j = i - 1;
+      while (j >= 0 && arr[j] > key) {
+        arr[j + 1] = arr[j];
+        j--;
+      }
+      arr[j + 1] = key;
+    }
+    return arr;
+  }`,
+    Python: `def insertion_sort(arr):
+    for i in range(1, len(arr)):
+      key = arr[i]
+      j = i - 1
+      while j >= 0 and arr[j] > key:
+        arr[j + 1] = arr[j]
+        j -= 1
+      arr[j + 1] = key
+    return arr`,
+    Java: `public class InsertionSort {
+    static void insertionSort(int[] arr) {
+      for (int i = 1; i < arr.length; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+          arr[j + 1] = arr[j];
+          j = j - 1;
+        }
+        arr[j + 1] = key;
+      }
+    }
+  }`,
+};
+  
+export const MergeSortCodeSnippets = {
+  JavaScript: `function mergeSort(arr) {
+  if (arr.length <= 1) return arr;
+
+  const mid = Math.floor(arr.length / 2);
+  const left = mergeSort(arr.slice(0, mid));
+  const right = mergeSort(arr.slice(mid));
+
+  return merge(left, right);
+}
+
+function merge(left, right) {
+  const result = [];
+  let i = 0, j = 0;
+
+  while (i < left.length && j < right.length) {
+    if (left[i] < right[j]) {
+      result.push(left[i++]);
+    } else {
+      result.push(right[j++]);
+    }
+  }
+
+  return result.concat(left.slice(i)).concat(right.slice(j));
+}`,
+  Python: `def merge_sort(arr):
+  if len(arr) <= 1:
+    return arr
+
+  mid = len(arr) // 2
+  left = merge_sort(arr[:mid])
+  right = merge_sort(arr[mid:])
+
+  return merge(left, right)
+
+def merge(left, right):
+  result = []
+  i = j = 0
+
+  while i < len(left) and j < len(right):
+    if left[i] < right[j]:
+      result.append(left[i])
+      i += 1
+    else:
+      result.append(right[j])
+      j += 1
+
+  result.extend(left[i:])
+  result.extend(right[j:])
+  return result`,
+  Java: `public class MergeSort {
+  public static void mergeSort(int[] arr, int left, int right) {
+    if (left < right) {
+      int mid = (left + right) / 2;
+      mergeSort(arr, left, mid);
+      mergeSort(arr, mid + 1, right);
+      merge(arr, left, mid, right);
+    }
+  }
+
+  private static void merge(int[] arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    int[] L = new int[n1];
+    int[] R = new int[n2];
+
+    for (int i = 0; i < n1; ++i)
+      L[i] = arr[left + i];
+    for (int j = 0; j < n2; ++j)
+      R[j] = arr[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+      if (L[i] <= R[j]) {
+        arr[k++] = L[i++];
+      } else {
+        arr[k++] = R[j++];
+      }
+    }
+
+    while (i < n1)
+      arr[k++] = L[i++];
+    while (j < n2)
+      arr[k++] = R[j++];
+  }
+}`,
+};
+

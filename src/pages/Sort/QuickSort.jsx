@@ -1,5 +1,5 @@
 import SortingVisualizer from "../../components/AlgorithmVisualizer/Sorting/SortingVisualizer"
-import { QuickSortCodeSnippets } from '../../utils/sortingAlgorithms'
+import { quickSort, QuickSortCodeSnippets } from '../../utils/sortingAlgorithms'
 import CodeBox from '../../components/Shared/CodeBox'
 import { useState } from 'react';
 
@@ -133,7 +133,7 @@ const QuickSort = () => {
 
       <hr />
 
-      <SortingVisualizer/>
+      <SortingVisualizer title="Quick" algorithmFn={quickSort}/>
                       
       <hr />
         
@@ -146,7 +146,7 @@ const QuickSort = () => {
         <h2 className="text-2xl font-bold mb-4">Quick Sort Implementation</h2>
 
         <p className="mb-4">
-          Quick Sort is a recursive algorithm that sorts an array by dividing it around a pivot element. Here's how it works:
+          Quick Sort is a recursive algorithm that sorts an array by dividing it around a pivot element. Here&apos;s how it works:
         </p>
 
         <ol className="list-decimal list-inside space-y-3">
@@ -164,7 +164,7 @@ const QuickSort = () => {
         </ol>
 
         <p className="mt-6">
-          Here's a quick breakdown:
+          Here&apos;s a quick breakdown:
         </p>
 
         <div className="bg-gray-100 p-4 rounded-lg mt-4">

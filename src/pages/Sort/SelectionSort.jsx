@@ -1,10 +1,10 @@
 import SortingVisualizer from "../../components/AlgorithmVisualizer/Sorting/SortingVisualizer"
-import { SelectionSortSnippets } from "../../utils/sortingAlgorithms";
+import { selectionSort, SelectionSortSnippets } from "../../utils/sortingAlgorithms";
 import CodeBox from '../../components/Shared/CodeBox'
 import { useState } from 'react';
 
 
-const QuickSort = () => {
+const SelectionSort = () => {
 
 
     const questions = [
@@ -58,7 +58,7 @@ const QuickSort = () => {
 
 
   return (
-    <section className="flex flex-col max-w-7xl mx-auto px-4 py-8 md:px-12 lg:px-24 bg-blue-100">
+    <section className="flex flex-col max-w-7xl mx-auto px-4 py-8 md:px-12 lg:px-24 bg-purple-100">
         {/* Big Heading */}
         <h1 className="text-4xl md:text-6xl font-bold text-center mb-8">Selection Sort</h1>
 
@@ -66,7 +66,7 @@ const QuickSort = () => {
         <p className="text-lg md:text-xl text-gray-700 mb-6 text-center">
         <strong>Selection Sort</strong> is a simple comparison-based algorithm. 
         It works by repeatedly selecting the <strong>smallest (or largest)</strong> element from the unsorted portion 
-        and placing it at the correct position. Although easy to implement, it's inefficient on large datasets.
+        and placing it at the correct position. Although easy to implement, it&apos;s inefficient on large datasets.
         </p>
 
         {/* Key Points */}
@@ -133,7 +133,7 @@ const QuickSort = () => {
 
         <hr />
 
-        <SortingVisualizer/>
+        <SortingVisualizer title="Selection" algorithmFn={selectionSort}/>
                       
         <hr />
         
@@ -146,12 +146,12 @@ const QuickSort = () => {
             <h2 className="text-2xl font-bold mb-4">Selection Sort Implementation</h2>
 
             <p className="mb-4">
-                Selection Sort works by repeatedly finding the minimum element and moving it to the front. Here's how:
+                Selection Sort works by repeatedly finding the minimum element and moving it to the front. Here&apos;s how:
             </p>
 
             <ol className="list-decimal list-inside space-y-3">
                 <li>
-                **Start from the first element** and assume it's the minimum.
+                **Start from the first element** and assume it&apos;s the minimum.
                 </li>
 
                 <li>
@@ -168,7 +168,7 @@ const QuickSort = () => {
             </ol>
 
             <p className="mt-6">
-                Here's a simple breakdown:
+                Here&apos;s a simple breakdown:
             </p>
 
             <div className="bg-gray-100 p-4 rounded-lg mt-4">
@@ -270,7 +270,7 @@ const QuickSort = () => {
   )
 }
 
-export default QuickSort
+export default SelectionSort
 
 
 

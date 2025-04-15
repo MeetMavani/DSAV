@@ -3,7 +3,6 @@ import ArrayVisualization from "./ArrayVisualizations/ArrayVisualization";
 const Array = () => {
     return ( 
       <>
-
         {/*  Section 1  */}
         <section className="flex flex-col max-w-7xl mx-auto px-4 py-8 md:px-12 lg:px-24 bg-gray-50">
           {/* Heading */}
@@ -98,7 +97,7 @@ const Array = () => {
           <div className="mb-8">
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">Key Notes</h3>
             <ul className="list-disc text-gray-600 space-y-3 pl-5">
-              <li>Arrays have <strong>fixed size</strong> — once declared, you can’t expand or shrink them.</li>
+              <li>Arrays have <strong>fixed size</strong> — once declared, you can&apos;t expand or shrink them.</li>
               <li>Most "insert" and "delete" operations involve <strong>shifting elements</strong>.</li>
               <li>Elements are stored in <strong>contiguous memory</strong>, allowing <code>O(1)</code> access.</li>
             </ul>
@@ -135,13 +134,13 @@ const Array = () => {
           {/* Analogy */}
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
             <p className="text-gray-800">
-              <strong>🔍 Analogy:</strong> Think of an array like a row of lockers — each locker (index) has a number, and you can directly open any locker to check or replace what's inside.
+              <strong>🔍 Analogy:</strong> Think of an array like a row of lockers — each locker (index) has a number, and you can directly open any locker to check or replace what&apos;s inside.
               But if you want to "insert" something in between, you need to shift everything — just like in real lockers.
             </p>
           </div>
 
           <p className="text-gray-700 mb-6">
-            Now that we've explored the core operations, let's visually understand how a few of them work in a simple array.
+            Now that we&apos;ve explored the core operations, let&apos;s visually understand how a few of them work in a simple array.
           </p>
 
           {/* Accessing Explanation */}
@@ -149,12 +148,7 @@ const Array = () => {
   
           <ArrayVisualization />
 
-
-          
-
-
         </section>
-
 
       </>
     );

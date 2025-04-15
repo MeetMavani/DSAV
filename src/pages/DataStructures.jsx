@@ -1,39 +1,66 @@
-import  { useState } from 'react';
-// import DSEnlargedView from './DSEnlargedView';
-import '../App.css';
+import { useState } from 'react';
+import DataStructureCard from './DataStructureCard';
 
 const dataStructures = [
-  { name: 'Array', description: 'Arrays are collections of items stored at contiguous memory locations...' },
-  { name: 'Linked List', description: 'A linked list is a linear data structure where elements are stored in nodes...' },
-  // Add more data structures here
+  {
+    name: 'Array',
+    emoji: '📦',
+    description: 'Arrays are collections of items stored at contiguous memory locations, accessible via index.',
+  },
+  {
+    name: 'Linked',
+    emoji: '🔗',
+    description: 'A linked list is a linear data structure where each element (node) points to the next.',
+  },
+  {
+    name: 'Stack',
+    emoji: '📚',
+    description: 'A stack is a linear data structure which follows LIFO (Last In First Out) principle.',
+  },
+  {
+    name: 'Queue',
+    emoji: '🚶',
+    description: 'A queue is a linear data structure which follows FIFO (First In First Out) principle.',
+  },
+  {
+    name: 'Tree',
+    emoji: '🌳',
+    description: 'A tree is a hierarchical data structure consisting of nodes with parent-child relationships.',
+  },
+  {
+    name: 'Graph',
+    emoji: '🕸️',
+    description: 'A graph is a collection of nodes connected by edges, used to represent networks.',
+  },
+  {
+    name: 'Hash Table',
+    emoji: '🔑',
+    description: 'A hash table stores key-value pairs using a hash function to compute the index.',
+  },
+  {
+    name: 'Heap',
+    emoji: '🏔️',
+    description: 'A heap is a special tree-based structure that satisfies the heap property (max or min).',
+  },
 ];
 
 const DataStructures = () => {
-  const [selectedDS, setSelectedDS] = useState(null);
-
-  const handleDSClick = (ds) => {
-    setSelectedDS(ds);
-  };
+  const [selectedDSName, setSelectedDSName] = useState(null);
 
   return (
-    <div className="data-structures">
-      <h2>Data Structures</h2>
-      {dataStructures.map((ds) => (
-        <div
-          key={ds.name}
-          className={`ds-item ${selectedDS === ds ? 'enlarged' : ''}`}
-          onClick={() => handleDSClick(ds)}
-        >
-          <h3>{ds.name}</h3>
-          {selectedDS === ds && (
-            <p>
-              {ds.description}
-              <br />
-              <a href={`/${ds.name}`}>Click to learn about {ds.name}</a>
-            </p>
-          )}
-        </div>
-      ))}
+    <div className="p-4 max-w-5xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center">📚 Data Structures Library</h2>
+
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {dataStructures.map((ds) => (
+          <DataStructureCard
+            key={ds.name}
+            ds={ds}
+            isSelected={selectedDSName === ds.name}
+            onClick={() => setSelectedDSName(selectedDSName === ds.name ? null : ds.name)}
+          />
+        ))}
+      </div>
     </div>
   );
 };

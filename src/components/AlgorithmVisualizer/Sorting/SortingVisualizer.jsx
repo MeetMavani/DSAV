@@ -1,47 +1,44 @@
 import { useState, useEffect } from "react";
-import { bubbleSort } from "../../../utils/sortingAlgorithms";
 import "./SortingVisualizer.css";
+import PropTypes from 'prop-types';
 
-const SortingVisualizer = () => {
+const SortingVisualizer = ({ title, algorithmFn }) => {
   const [array, setArray] = useState([]);
-  const [speed, setSpeed] = useState(500); // Default speed (in ms)
+  const [speed, setSpeed] = useState(500);
   const [manualInput, setManualInput] = useState("");
 
-  // Generate a new random array
   const generateArray = () => {
     const newArr = Array.from({ length: 20 }, () => Math.floor(Math.random() * 100) + 1);
     setArray(newArr);
   };
 
-  // Generate a sorted array
   const generateSortedArray = () => {
     const newArr = Array.from({ length: 20 }, (_, i) => i * 5 + 5);
     setArray(newArr);
   };
 
-  // Generate a reversed array
   const generateReversedArray = () => {
     const newArr = Array.from({ length: 20 }, (_, i) => (20 - i) * 5);
     setArray(newArr);
   };
 
-  // Handle manual array input
   const handleManualInput = () => {
     const parsedArray = manualInput
       .split(",")
       .map((num) => parseInt(num.trim()))
-      .filter((num) => !isNaN(num)); // Filter out invalid inputs
+      .filter((num) => !isNaN(num));
     if (parsedArray.length > 0) {
       setArray(parsedArray);
     }
   };
 
   useEffect(() => {
-    generateArray(); // Generate an initial array on mount
+    generateArray();
   }, []);
 
   const handleSort = () => {
-    const animations = bubbleSort(array);
+    const animations = algorithmFn(array);
+
     animations.forEach((step, i) => {
       setTimeout(() => {
         setArray([...step.array]);
@@ -72,7 +69,7 @@ const SortingVisualizer = () => {
             bars[k].classList.add("sorted");
           }
         }
-      }, i * speed); // Adjust speed dynamically
+      }, i * speed);
     });
   };
 
@@ -83,21 +80,15 @@ const SortingVisualizer = () => {
         <button onClick={generateSortedArray}>Sorted Array</button>
         <button onClick={generateReversedArray}>Reversed Array</button>
 
-        {/* Manual Input */}
         <input
           type="text"
           placeholder="Enter numbers (comma-separated)"
           value={manualInput}
           onChange={(e) => setManualInput(e.target.value)}
-          style={{
-            border: "2px solid black",
-            padding: "7px",
-            width: "262px"
-          }}
+          style={{ border: "2px solid black", padding: "7px", width: "262px" }}
         />
         <button onClick={handleManualInput}>Set Custom Array</button>
 
-        {/* Speed Control */}
         <label>
           Speed:
           <input
@@ -111,12 +102,10 @@ const SortingVisualizer = () => {
           {speed}ms
         </label>
 
-        {/* Sorting Button */}
-        <button onClick={handleSort}>Bubble Sort</button>
+        <button onClick={handleSort}>{title} Sort</button>
       </div>
 
       <div className="array-container">
-        {/* Bar Visualization */}
         <div className="bar-visualization">
           {array.map((value, idx) => (
             <div
@@ -127,7 +116,6 @@ const SortingVisualizer = () => {
           ))}
         </div>
 
-        {/* Box Visualization */}
         <div className="box-visualization">
           {array.map((value, idx) => (
             <div className="array-box" key={`box-${idx}`}>
@@ -138,6 +126,11 @@ const SortingVisualizer = () => {
       </div>
     </div>
   );
+};
+
+SortingVisualizer.propTypes = {
+  title: PropTypes.string.isRequired,
+  algorithmFn: PropTypes.func.isRequired,
 };
 
 export default SortingVisualizer;

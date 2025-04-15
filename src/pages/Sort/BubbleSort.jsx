@@ -1,6 +1,6 @@
 // import StarryBackground from '../../components/StarryBackground'
 import SortingVisualizer from "../../components/AlgorithmVisualizer/Sorting/SortingVisualizer"
-import { BubbleSortCodeSnippets } from "../../utils/sortingAlgorithms";
+import { bubbleSort, BubbleSortCodeSnippets } from "../../utils/sortingAlgorithms";
 import CodeBox from '../../components/Shared/CodeBox'
 import { useState } from 'react';
 
@@ -26,49 +26,6 @@ const BubbleSort = () => {
     },
   ];
 
-  // const initialArray = [5, 3, 8, 1, 4]; // Adjust the array for better visualization
-  // const [array, setArray] = useState([...initialArray]);
-  // const [currentIndex, setCurrentIndex] = useState(0);
-  // const [isRunning, setIsRunning] = useState(false);
-
-  // const startSimulation = () => {
-  //   if (isRunning) return; // Prevent multiple clicks
-  //   setIsRunning(true);
-  //   console.log("Simulation Started");
-  //   simulatePass();
-  // };
-
-  // const resetSimulation = () => {
-  //   setArray([...initialArray]);
-  //   setCurrentIndex(0);
-  //   setIsRunning(false);
-  //   console.log("Simulation Reset");
-  // };
-
-  // const simulatePass = () => {
-  //   let i = 0;
-  //   const len = array.length;
-
-  //   const interval = setInterval(() => {
-  //     if (i >= len - 1) {
-  //       clearInterval(interval);
-  //       setIsRunning(false);
-  //       console.log("Simulation Complete");
-  //       return;
-  //     }
-
-  //     setArray((prevArray) => {
-  //       const newArray = [...prevArray];
-  //       if (newArray[i] > newArray[i + 1]) {
-  //         [newArray[i], newArray[i + 1]] = [newArray[i + 1], newArray[i]];
-  //       }
-  //       return newArray;
-  //     });
-
-  //     setCurrentIndex(i);
-  //     i++;
-  //   }, 1000);
-  // };
 
   const [score, setScore] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
@@ -175,42 +132,7 @@ const BubbleSort = () => {
 
         <hr />
 
-        <SortingVisualizer/>
-
-        {/* Simulation */}
-        {/* <section className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Bubble Sort: One Pass Simulation</h2>
-
-          <div className="flex space-x-4 mb-6">
-            {array.map((value, index) => (
-              <div
-                key={index}
-                className={`p-4 border rounded ${
-                  index === currentIndex || index === currentIndex + 1
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {value}
-              </div>
-            ))}
-          </div>
-
-          <button
-            onClick={startSimulation}
-            disabled={isRunning}
-            className="mr-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-800"
-          >
-            Start Simulation
-          </button>
-
-          <button
-            onClick={resetSimulation}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-800"
-          >
-            Reset
-          </button>
-        </section> */}
+        <SortingVisualizer title="Bubble" algorithmFn={bubbleSort}/>
                       
         <hr />
         
