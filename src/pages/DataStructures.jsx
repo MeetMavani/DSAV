@@ -8,7 +8,7 @@ const dataStructures = [
     description: 'Arrays are collections of items stored at contiguous memory locations, accessible via index.',
   },
   {
-    name: 'Linked',
+    name: 'LinkedList',
     emoji: '🔗',
     description: 'A linked list is a linear data structure where each element (node) points to the next.',
   },

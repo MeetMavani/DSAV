@@ -11,7 +11,7 @@ import MergeSort from './pages/Sort/MergeSort'
 import Array from './pages/DataStructures/Array'
 import LinearSearch from './pages/Algorithms/Search/LinearSearch';
 import BinarySearch from './pages/Algorithms/Search/BinarySearch';
-import Linked from './pages/DataStructures/Linked';
+import LinkedList from './pages/DataStructures/LinkedList';
 
 
 const App = () => {
@@ -30,7 +30,7 @@ const App = () => {
         <Route path="/Array" element={<Array />} />
         <Route path="/LinearSearch" element={<LinearSearch />} />
         <Route path="/BinarySearch" element={<BinarySearch />} />
-        <Route path="/Linked" element={<Linked />} />
+        <Route path="/LinkedList" element={<LinkedList />} />
       </Routes>
     </Router>
   );
