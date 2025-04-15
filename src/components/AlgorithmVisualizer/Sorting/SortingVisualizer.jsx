@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./SortingVisualizer.css";
 import PropTypes from 'prop-types';
 
@@ -6,7 +6,10 @@ const SortingVisualizer = ({ title, algorithmFn }) => {
   const [array, setArray] = useState([]);
   const [speed, setSpeed] = useState(500);
   const [manualInput, setManualInput] = useState("");
+  const [isSorting, setIsSorting] = useState(false);
+  const timeouts = useRef([]);  // To track the timeouts for cleanup
 
+  // Generate random array, sorted array, and reversed array
   const generateArray = () => {
     const newArr = Array.from({ length: 20 }, () => Math.floor(Math.random() * 100) + 1);
     setArray(newArr);
@@ -34,23 +37,33 @@ const SortingVisualizer = ({ title, algorithmFn }) => {
 
   useEffect(() => {
     generateArray();
+    return () => {
+      // Clean up timeouts when component unmounts
+      timeouts.current.forEach(clearTimeout);
+      timeouts.current = [];
+    };
   }, []);
 
   const handleSort = () => {
+    if (isSorting) return; // Prevent sorting if it's already sorting
+
+    setIsSorting(true); // Mark as sorting
     const animations = algorithmFn(array);
 
     animations.forEach((step, i) => {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setArray([...step.array]);
 
         const boxes = document.getElementsByClassName("array-box");
         const bars = document.getElementsByClassName("array-bar");
 
+        // Remove any previous highlights
         for (let j = 0; j < boxes.length; j++) {
           boxes[j].classList.remove("comparing", "swapping", "sorted");
           bars[j].classList.remove("comparing", "swapping", "sorted");
         }
 
+        // Add new highlights based on animation step type
         if (step.type === "compare") {
           boxes[step.indices[0]].classList.add("comparing");
           boxes[step.indices[1]].classList.add("comparing");
@@ -63,14 +76,33 @@ const SortingVisualizer = ({ title, algorithmFn }) => {
           bars[step.indices[1]].classList.add("swapping");
         }
 
+        // Mark elements as sorted once the last animation step completes
         if (i === animations.length - 1) {
           for (let k = 0; k < boxes.length; k++) {
             boxes[k].classList.add("sorted");
             bars[k].classList.add("sorted");
           }
+          setIsSorting(false); // Sorting is complete
         }
       }, i * speed);
+
+      timeouts.current.push(timeoutId); // Store the timeout id for cleanup
     });
+  };
+
+  // Reset the array and clear any ongoing animations
+  const handleReset = () => {
+    // Clear all timeouts and reset animations
+    timeouts.current.forEach(clearTimeout);
+    timeouts.current = [];
+    const boxes = document.getElementsByClassName("array-box");
+    const bars = document.getElementsByClassName("array-bar");
+    for (let j = 0; j < boxes.length; j++) {
+      boxes[j].classList.remove("comparing", "swapping", "sorted");
+      bars[j].classList.remove("comparing", "swapping", "sorted");
+    }
+    generateArray(); // Reset array to random values
+    setIsSorting(false); // Reset sorting state
   };
 
   return (
@@ -102,7 +134,8 @@ const SortingVisualizer = ({ title, algorithmFn }) => {
           {speed}ms
         </label>
 
-        <button onClick={handleSort}>{title} Sort</button>
+        <button onClick={handleSort}>Start {title} Sort</button>
+        <button onClick={handleReset}>Reset</button> {/* Reset button */}
       </div>
 
       <div className="array-container">

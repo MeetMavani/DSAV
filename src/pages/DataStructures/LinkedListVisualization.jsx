@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 const LinkedListVisualization = () => {
@@ -6,15 +6,17 @@ const LinkedListVisualization = () => {
   const accessingRef = useRef();
   const insertingRef = useRef();
   const deletingRef = useRef();
-
+  const timelineRef = useRef(null); // for storing timeline instance
+ 
   const list = [10, 20, 30, 40];
   const accessIndex = 2;
   const insertIndex = 2;
   const insertValue = 25;
   const deleteIndex = 1;
 
-  useEffect(() => {
+  const runAnimation = () => {
     const tl = gsap.timeline({ delay: 0.5 });
+    timelineRef.current = tl; // This ensures timelineRef points to the new one
 
     // Traversal
     const traversalBoxes = traversalRef.current.children;
@@ -113,6 +115,54 @@ const LinkedListVisualization = () => {
         lastBox.style.display = "none";
       },
     });
+
+    return tl;
+  };
+
+  const resetAnimation = () => {
+    // Kill any previous timeline
+    if (timelineRef.current) {
+      timelineRef.current.kill();
+    }
+  
+    // Create a new timeline and assign it
+    const tl = gsap.timeline({ delay: 0.5 });
+    timelineRef.current = tl;
+  
+    // Reset traversal boxes
+    [...traversalRef.current.children].forEach((box, i) => {
+      box.style = "";
+      box.querySelector("span:first-child").textContent = list[i];
+    });
+  
+    // Reset accessing
+    [...accessingRef.current.children].forEach((box, i) => {
+      box.style = "";
+      box.querySelector("span:first-child").textContent = list[i];
+    });
+  
+    // Reset inserting (include extra slot)
+    [...insertingRef.current.children].forEach((box, i) => {
+      box.style = "";
+      box.querySelector("span:first-child").textContent =
+        i < list.length ? list[i] : "";
+    });
+  
+    // Reset deleting
+    [...deletingRef.current.children].forEach((box, i) => {
+      box.style = "";
+      box.style.display = "block";
+      box.style.opacity = 1;
+      box.style.scale = 1;
+      box.querySelector("span:first-child").textContent = list[i];
+    });
+  
+    runAnimation(); // Start fresh
+  };
+  
+
+  useEffect(() => {
+    resetAnimation();
   }, []);
 
   const renderBoxes = (ref, values) => (
@@ -130,7 +180,20 @@ const LinkedListVisualization = () => {
   );
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto">
+      <div className="flex justify-end mb-6">
+        <button
+          onClick={resetAnimation}
+          className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded shadow"
+        >
+          🔄 Reset Animation
+        </button>
+      </div>
+
+      <div className="mb-10">
+        <h2 className="text-3xl font-bold mb-4 text-center">Linked List Operations 🧠</h2>
+      </div>
+
       {/* Traversal */}
       <div className="mt-8">
         <h3 className="text-xl font-semibold mb-2">🔹 Traversal</h3>

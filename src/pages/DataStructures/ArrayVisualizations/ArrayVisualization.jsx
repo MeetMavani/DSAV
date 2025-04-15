@@ -18,7 +18,35 @@ const ArrayVisualization = () => {
   const insertValue = 25;
   const deleteIndex = 2;
 
-  useEffect(() => {
+  const timelineRef = useRef(null);
+
+  const resetAnimation = () => {
+    // Kill the previous timeline
+    if (timelineRef.current) {
+      timelineRef.current.kill();
+    }
+
+    // Reset styles of all elements before starting new animation
+    const resetElements = (ref) => {
+      const elements = ref.current.children;
+      Array.from(elements).forEach((el) => {
+        el.style.backgroundColor = "#fff"; // Reset background color
+        el.style.color = "#000"; // Reset text color
+        el.style.opacity = "1"; // Reset opacity
+        el.style.scale = "1"; // Reset scale
+        el.style.boxShadow = ""; // Remove box shadow
+      });
+    };
+
+    // Reset the boxes in all sections
+    resetElements(traversalRef);
+    resetElements(accessingRef);
+    resetElements(searchingRef);
+    resetElements(updatingRef);
+    resetElements(insertionRef);
+    resetElements(deletionRef);
+
+    // Now create a new timeline and start the animation
     const tl = gsap.timeline();
 
     const traversalBoxes = traversalRef.current.children;
@@ -151,7 +179,15 @@ const ArrayVisualization = () => {
         lastBox.style.display = "none";
       }
     });
-  }, []);
+
+    // Store the timeline reference for later use
+    timelineRef.current = tl;
+  };
+
+  useEffect(() => {
+    // Initial animation start
+    resetAnimation();
+  }, []);  // Empty dependency array to run once on mount
 
   const renderBoxes = (ref, values) => (
     <div ref={ref} className="flex justify-center items-center gap-4 mt-4">
@@ -177,8 +213,8 @@ const ArrayVisualization = () => {
         </p>
         {renderBoxes(traversalRef, array)}
         <p className="text-sm text-gray-500 mt-2 text-center">
-        Watch how each element is visited sequentially — just like in a loop.
-      </p>
+          Watch how each element is visited sequentially — just like in a loop.
+        </p>
       </div>
 
       {/* Accessing */}
@@ -189,8 +225,8 @@ const ArrayVisualization = () => {
         </p>
         {renderBoxes(accessingRef, array)}
         <p className="text-center text-gray-600 mt-2">
-        We're accessing the element at index <strong>{accessedIndex}</strong> → value <strong>{array[accessedIndex]}</strong> gets highlighted.
-      </p>
+          We're accessing the element at index <strong>{accessedIndex}</strong> → value <strong>{array[accessedIndex]}</strong> gets highlighted.
+        </p>
       </div>
 
       {/* Searching */}
@@ -201,8 +237,8 @@ const ArrayVisualization = () => {
         </p>
         {renderBoxes(searchingRef, array)}
         <p className="text-sm text-gray-600 mt-2 text-center">
-        Searching for value <strong>{searchedValue}</strong> — each element is checked until it's found.
-      </p>
+          Searching for value <strong>{searchedValue}</strong> — each element is checked until it's found.
+        </p>
       </div>
 
       {/* Updating */}
@@ -212,7 +248,6 @@ const ArrayVisualization = () => {
           Updating means changing the value at a specific index. Since we know the index, this also takes <code>O(1)</code> time.
         </p>
         {renderBoxes(updatingRef, array)}
-        
       </div>
 
       {/* Insertion */}
@@ -235,6 +270,16 @@ const ArrayVisualization = () => {
           <span className="italic text-sm">⚠️ See how deletion causes a gap, which we fill by shifting? Arrays aren't ideal for frequent deletions either.</span>
         </p>
         {renderBoxes(deletionRef, array)}
+      </div>
+
+      {/* Reset Button */}
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={resetAnimation}
+          className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
+        >
+          Reset Animation
+        </button>
       </div>
     </>
   );
