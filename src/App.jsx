@@ -12,6 +12,7 @@ import Array from './pages/DataStructures/Array'
 import LinearSearch from './pages/Algorithms/Search/LinearSearch';
 import BinarySearch from './pages/Algorithms/Search/BinarySearch';
 import LinkedList from './pages/DataStructures/LinkedList';
+import Stack from './pages/DataStructures/Stack';
 
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
         <Route path="/LinearSearch" element={<LinearSearch />} />
         <Route path="/BinarySearch" element={<BinarySearch />} />
         <Route path="/LinkedList" element={<LinkedList />} />
+        <Route path="/Stack" element={<Stack />} />
       </Routes>
     </Router>
   );
