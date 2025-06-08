@@ -1,12 +1,28 @@
+import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import StaryBackground from './StarryBackground';
+import Login from '../pages/Login';
 
 const Home = () => {
+  const [showLogin, setShowLogin] = useState(false);
+
   return (
-    <div className="relative min-h-screen  text-white overflow-hidden">
+    <div className="relative min-h-screen text-white overflow-hidden">
       <StaryBackground />
 
+      {/* Navigation Bar */}
+      <nav className="relative z-20 flex justify-between items-center px-6 py-4">
+        <div className="text-2xl font-bold text-[#00ffff]">DSAV</div>
+        <button
+          onClick={() => setShowLogin(true)}
+          className="bg-[#00ffff] text-black px-6 py-2 rounded-lg font-semibold hover:bg-[#00cccc] transition-colors duration-200"
+        >
+          Login
+        </button>
+      </nav>
+
       {/* Hero Section */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-32 pb-16">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-20 pb-16">
         <h1 className="text-5xl font-extrabold mb-4 tracking-wide drop-shadow-md">
           DSAV
         </h1>
@@ -17,7 +33,6 @@ const Home = () => {
 
       {/* Info Sections */}
       <div className="relative z-10 px-6 max-w-4xl mx-auto space-y-16 pb-20">
-
         <section>
           <h3 className="text-2xl font-bold mb-4 text-blue-400">📦 What are Data Structures?</h3>
           <p className="text-gray-300 leading-relaxed">
@@ -34,7 +49,7 @@ const Home = () => {
             Algorithms are step-by-step procedures or formulas for solving problems.
             They are the heart of computer science, enabling computers to perform tasks ranging from simple calculations to complex operations.
             Understanding algorithms is crucial because they define how data structures interact, and they help optimize performance.
-            Examples include sorting algorithms like Bubble Sort and Quick Sort, searching algorithms like Binary Search, and graph algorithms like Dijkstra’s algorithm.
+            Examples include sorting algorithms like Bubble Sort and Quick Sort, searching algorithms like Binary Search, and graph algorithms like Dijkstra's algorithm.
           </p>
         </section>
 
@@ -47,6 +62,13 @@ const Home = () => {
           </p>
         </section>
       </div>
+
+      {/* Login Modal */}
+      <AnimatePresence>
+        {showLogin && (
+          <Login onClose={() => setShowLogin(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
