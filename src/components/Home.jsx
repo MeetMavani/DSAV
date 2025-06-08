@@ -47,12 +47,11 @@ const Home = () => {
 
       {/* Navigation Bar */}
       <nav className="relative z-20 flex justify-between items-center px-6 py-4">
-        <div className="text-2xl font-bold text-[#00ffff]">DSAV</div>
         
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <span className="text-green-400 text-sm">
+              <span className="text-green-400 font-extrabold text-sm">
                 Welcome, {user.email}
               </span>
               <button
@@ -76,7 +75,7 @@ const Home = () => {
       {/* User Status Indicator */}
       {user && (
         <div className="relative z-10 text-center py-2">
-          <div className="inline-flex items-center gap-2 bg-green-500 bg-opacity-20 text-green-400 px-4 py-2 rounded-full border border-green-500">
+          <div className="inline-flex items-center gap-2 bg-green-200 bg-opacity-20 text-green-400 px-4 py-2 rounded-full border border-green-500">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium">You are logged in</span>
           </div>
@@ -93,8 +92,8 @@ const Home = () => {
         </p>
         
         {user && (
-          <div className="mt-6 p-4 bg-blue-500 bg-opacity-20 rounded-lg border border-blue-500">
-            <p className="text-blue-300 font-medium">
+          <div className="mt-6 p-4 bg-blue-500 bg-opacity-20 rounded-lg border border-blue-200">
+            <p className="text-gray-300 font-medium">
               🎉 Ready to explore Data Structures and Algorithms!
             </p>
           </div>
