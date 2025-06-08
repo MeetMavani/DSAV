@@ -1,29 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect } from 'react';
 
 const HashTableVisualization = () => {
-  const insertionRef = useRef();
-  const searchRef = useRef();
-  const collisionRef = useRef();
-  const resizingRef = useRef();
-  
-  const [isRunning, setIsRunning] = useState(false);
-
-  // Hash table configuration
-  const TABLE_SIZE = 7;
-  const RESIZED_TABLE_SIZE = 13;
-
-  // Sample data for operations
-  const sampleData = [
-    { key: "apple", value: 150 },
-    { key: "banana", value: 75 },
-    { key: "cherry", value: 200 },
-    { key: "date", value: 120 },
-    { key: "elderberry", value: 90 },
-    { key: "fig", value: 80 }
-  ];
+  const [tableSize, setTableSize] = useState(7);
+  const [table, setTable] = useState(Array(7).fill(null).map(() => []));
+  const [inputKey, setInputKey] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [searchKey, setSearchKey] = useState('');
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [animationStep, setAnimationStep] = useState('');
+  const [hashValue, setHashValue] = useState(-1);
+  const [loadFactor, setLoadFactor] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const [lastOperation, setLastOperation] = useState('');
+  const [collisionCount, setCollisionCount] = useState(0);
 
   // Simple hash function
-  const hashFunction = (key, tableSize = TABLE_SIZE) => {
+  const hashFunction = (key) => {
     let hash = 0;
     for (let i = 0; i < key.length; i++) {
       hash = (hash + key.charCodeAt(i) * (i + 1)) % tableSize;
@@ -31,664 +24,423 @@ const HashTableVisualization = () => {
     return hash;
   };
 
-  // Animation helper functions
-  const animateElement = (element, styles, duration = 500) => {
-    if (!element) return Promise.resolve();
-    
-    return new Promise(resolve => {
-      Object.assign(element.style, styles);
-      setTimeout(resolve, duration);
-    });
-  };
-
-  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-  const highlightHashFunction = async (key, tableSize = TABLE_SIZE) => {
-    const hashValue = hashFunction(key, tableSize);
-    // In a real implementation, we'd show the hash calculation step by step
-    return hashValue;
-  };
-
-  const runAnimations = async () => {
-    if (isRunning) return;
-    setIsRunning(true);
-
-    // Reset all tables
-    [insertionRef, searchRef, collisionRef, resizingRef].forEach(ref => {
-      if (ref.current) {
-        const slots = ref.current.querySelectorAll('.hash-slot');
-        const items = ref.current.querySelectorAll('.hash-item');
-        
-        slots.forEach(slot => {
-          slot.style.backgroundColor = "#f9fafb";
-          slot.style.borderColor = "#e5e7eb";
-          slot.style.transform = "scale(1)";
-        });
-        
-        items.forEach(item => {
-          item.style.opacity = "0";
-          item.style.transform = "scale(0)";
-          item.style.backgroundColor = "#fff";
-          item.style.borderColor = "#d1d5db";
-        });
-      }
-    });
-
-    await sleep(500);
-
-    // Run all animations in sequence
-    await animateInsertion();
-    await sleep(2000);
-    
-    await animateSearch();
-    await sleep(2000);
-    
-    await animateCollisionHandling();
-    await sleep(2000);
-    
-    await animateResizing();
-    
-    setIsRunning(false);
-  };
-
-  const animateInsertion = async () => {
-    const container = insertionRef.current;
-    if (!container) return;
-
-    const slots = container.querySelectorAll('.hash-slot');
-    const items = container.querySelectorAll('.hash-item');
-
-    // Insert first 3 items to show basic insertion
-    const itemsToInsert = sampleData.slice(0, 3);
-
-    for (let i = 0; i < itemsToInsert.length; i++) {
-      const item = itemsToInsert[i];
-      const hashIndex = await highlightHashFunction(item.key);
-      
-      // Highlight the hash calculation
-      const hashDisplay = container.querySelector('.hash-calculation');
-      if (hashDisplay) {
-        hashDisplay.textContent = `hash("${item.key}") = ${hashIndex}`;
-        await animateElement(hashDisplay, {
-          backgroundColor: "#fef3c7",
-          color: "#92400e"
-        }, 300);
-      }
-
-      await sleep(500);
-
-      // Highlight target slot
-      const targetSlot = slots[hashIndex];
-      if (targetSlot) {
-        await animateElement(targetSlot, {
-          backgroundColor: "#dbeafe",
-          borderColor: "#3b82f6",
-          transform: "scale(1.05)"
-        }, 400);
-      }
-
-      await sleep(300);
-
-      // Animate item insertion
-      const itemElement = items[i];
-      if (itemElement) {
-        await animateElement(itemElement, {
-          opacity: "1",
-          transform: "scale(1.1)",
-          backgroundColor: "#10b981",
-          borderColor: "#047857",
-          color: "#fff"
-        }, 600);
-
-        await sleep(400);
-
-        await animateElement(itemElement, {
-          transform: "scale(1)",
-          backgroundColor: "#f0fdf4",
-          borderColor: "#16a34a",
-          color: "#000"
-        }, 300);
-      }
-
-      // Reset slot highlighting
-      if (targetSlot) {
-        await animateElement(targetSlot, {
-          backgroundColor: "#f9fafb",
-          borderColor: "#e5e7eb",
-          transform: "scale(1)"
-        }, 300);
-      }
-
-      // Reset hash display
-      if (hashDisplay) {
-        await animateElement(hashDisplay, {
-          backgroundColor: "#f3f4f6",
-          color: "#374151"
-        }, 200);
-      }
-
-      await sleep(600);
-    }
-  };
-
-  const animateSearch = async () => {
-    const container = searchRef.current;
-    if (!container) return;
-
-    const slots = container.querySelectorAll('.hash-slot');
-    const items = container.querySelectorAll('.hash-item');
-
-    // First populate the table (instantly)
-    const itemsToShow = sampleData.slice(0, 3);
-    for (let i = 0; i < itemsToShow.length; i++) {
-      const item = itemsToShow[i];
-      const hashIndex = hashFunction(item.key);
-      const itemElement = items[i];
-      
-      if (itemElement) {
-        itemElement.style.opacity = "1";
-        itemElement.style.transform = "scale(1)";
-        itemElement.style.backgroundColor = "#f0fdf4";
-        itemElement.style.borderColor = "#16a34a";
-      }
-    }
-
-    await sleep(500);
-
-    // Search for "banana"
-    const searchKey = "banana";
-    const searchHashIndex = hashFunction(searchKey);
-
-    // Show hash calculation
-    const hashDisplay = container.querySelector('.hash-calculation');
-    if (hashDisplay) {
-      hashDisplay.textContent = `Searching: hash("${searchKey}") = ${searchHashIndex}`;
-      await animateElement(hashDisplay, {
-        backgroundColor: "#fef3c7",
-        color: "#92400e"
-      }, 300);
-    }
-
-    await sleep(500);
-
-    // Highlight search path
-    const targetSlot = slots[searchHashIndex];
-    if (targetSlot) {
-      await animateElement(targetSlot, {
-        backgroundColor: "#fecaca",
-        borderColor: "#dc2626",
-        transform: "scale(1.05)"
-      }, 400);
-    }
-
-    const targetItem = items[1]; // banana is second item
-    if (targetItem) {
-      await animateElement(targetItem, {
-        backgroundColor: "#ef4444",
-        borderColor: "#dc2626",
-        color: "#fff",
-        transform: "scale(1.2)",
-        boxShadow: "0 0 20px #ef4444"
-      }, 600);
-
-      await sleep(1000);
-
-      await animateElement(targetItem, {
-        backgroundColor: "#f0fdf4",
-        borderColor: "#16a34a",
-        color: "#000",
-        transform: "scale(1)",
-        boxShadow: "none"
-      }, 400);
-    }
-
-    // Reset highlighting
-    if (targetSlot) {
-      await animateElement(targetSlot, {
-        backgroundColor: "#f9fafb",
-        borderColor: "#e5e7eb",
-        transform: "scale(1)"
-      }, 300);
-    }
-
-    if (hashDisplay) {
-      hashDisplay.textContent = "Found! O(1) average time complexity";
-      await animateElement(hashDisplay, {
-        backgroundColor: "#d1fae5",
-        color: "#065f46"
-      }, 300);
-    }
-  };
-
-  const animateCollisionHandling = async () => {
-    const container = collisionRef.current;
-    if (!container) return;
-
-    const slots = container.querySelectorAll('.hash-slot');
-    const chains = container.querySelectorAll('.collision-chain');
-
-    // Show items that cause collisions
-    const collisionItems = [
-      { key: "apple", value: 150 },  // hash = 5
-      { key: "grape", value: 95 },   // hash = 5 (collision!)
-      { key: "mango", value: 110 }   // hash = 5 (another collision!)
-    ];
-
-    for (let i = 0; i < collisionItems.length; i++) {
-      const item = collisionItems[i];
-      const hashIndex = hashFunction(item.key);
-
-      // Show hash calculation
-      const hashDisplay = container.querySelector('.hash-calculation');
-      if (hashDisplay) {
-        const isCollision = i > 0;
-        hashDisplay.textContent = isCollision 
-          ? `Collision! hash("${item.key}") = ${hashIndex} (occupied)`
-          : `hash("${item.key}") = ${hashIndex}`;
-        
-        await animateElement(hashDisplay, {
-          backgroundColor: isCollision ? "#fee2e2" : "#fef3c7",
-          color: isCollision ? "#dc2626" : "#92400e"
-        }, 300);
-      }
-
-      await sleep(500);
-
-      // Highlight target slot
-      const targetSlot = slots[hashIndex];
-      if (targetSlot) {
-        await animateElement(targetSlot, {
-          backgroundColor: i === 0 ? "#dbeafe" : "#fecaca",
-          borderColor: i === 0 ? "#3b82f6" : "#dc2626",
-          transform: "scale(1.05)"
-        }, 400);
-      }
-
-      await sleep(300);
-
-      // Show chaining for collisions
-      const chain = chains[hashIndex];
-      if (chain && i > 0) {
-        const chainItem = chain.children[i - 1];
-        if (chainItem) {
-          await animateElement(chainItem, {
-            opacity: "1",
-            transform: "scale(1)",
-            backgroundColor: "#fbbf24",
-            borderColor: "#f59e0b"
-          }, 500);
-        }
-      } else if (i === 0) {
-        // First item goes directly in slot
-        const slotItem = targetSlot.querySelector('.hash-item');
-        if (slotItem) {
-          await animateElement(slotItem, {
-            opacity: "1",
-            transform: "scale(1)",
-            backgroundColor: "#10b981",
-            borderColor: "#047857",
-            color: "#fff"
-          }, 500);
-
-          await sleep(300);
-
-          await animateElement(slotItem, {
-            backgroundColor: "#f0fdf4",
-            color: "#000"
-          }, 300);
-        }
-      }
-
-      // Reset slot highlighting
-      if (targetSlot) {
-        await animateElement(targetSlot, {
-          backgroundColor: "#f9fafb",
-          borderColor: "#e5e7eb",
-          transform: "scale(1)"
-        }, 300);
-      }
-
-      await sleep(800);
-    }
-
-    // Final message
-    const hashDisplay = container.querySelector('.hash-calculation');
-    if (hashDisplay) {
-      hashDisplay.textContent = "Collision resolved using chaining (linked lists)";
-      await animateElement(hashDisplay, {
-        backgroundColor: "#d1fae5",
-        color: "#065f46"
-      }, 300);
-    }
-  };
-
-  const animateResizing = async () => {
-    const container = resizingRef.current;
-    if (!container) return;
-
-    const oldTable = container.querySelector('.old-table');
-    const newTable = container.querySelector('.new-table');
-    const arrow = container.querySelector('.resize-arrow');
-
-    // Show old table with items
-    if (oldTable) {
-      const oldSlots = oldTable.querySelectorAll('.hash-slot');
-      const oldItems = oldTable.querySelectorAll('.hash-item');
-      
-      // Populate old table
-      for (let i = 0; i < 4; i++) {
-        const item = oldItems[i];
-        if (item) {
-          item.style.opacity = "1";
-          item.style.transform = "scale(1)";
-          item.style.backgroundColor = "#f0fdf4";
-        }
-      }
-    }
-
-    await sleep(1000);
-
-    // Show load factor warning
-    const loadFactorDisplay = container.querySelector('.load-factor');
-    if (loadFactorDisplay) {
-      loadFactorDisplay.textContent = "Load Factor > 0.75 - Time to resize!";
-      await animateElement(loadFactorDisplay, {
-        backgroundColor: "#fee2e2",
-        color: "#dc2626"
-      }, 500);
-    }
-
-    await sleep(1000);
-
-    // Show arrow and new table
-    if (arrow) {
-      await animateElement(arrow, {
-        opacity: "1",
-        transform: "translateX(0)"
-      }, 600);
-    }
-
-    if (newTable) {
-      await animateElement(newTable, {
-        opacity: "1",
-        transform: "scale(1)"
-      }, 600);
-    }
-
-    await sleep(500);
-
-    // Animate rehashing items to new positions
-    if (newTable) {
-      const newItems = newTable.querySelectorAll('.hash-item');
-      const rehashData = [
-        { key: "apple", oldPos: 0, newPos: 8 },
-        { key: "banana", oldPos: 1, newPos: 3 },
-        { key: "cherry", oldPos: 2, newPos: 11 },
-        { key: "date", oldPos: 6, newPos: 5 }
-      ];
-
-      for (let i = 0; i < rehashData.length; i++) {
-        const data = rehashData[i];
-        const newHashIndex = hashFunction(data.key, RESIZED_TABLE_SIZE);
-        
-        // Show rehashing calculation
-        if (loadFactorDisplay) {
-          loadFactorDisplay.textContent = `Rehashing: hash("${data.key}") = ${newHashIndex} (new size: ${RESIZED_TABLE_SIZE})`;
-          await animateElement(loadFactorDisplay, {
-            backgroundColor: "#fef3c7",
-            color: "#92400e"
-          }, 300);
-        }
-
-        const newItem = newItems[data.newPos];
-        if (newItem) {
-          await animateElement(newItem, {
-            opacity: "1",
-            transform: "scale(1.1)",
-            backgroundColor: "#3b82f6",
-            borderColor: "#1d4ed8",
-            color: "#fff"
-          }, 500);
-
-          await sleep(300);
-
-          await animateElement(newItem, {
-            transform: "scale(1)",
-            backgroundColor: "#f0fdf4",
-            borderColor: "#16a34a",
-            color: "#000"
-          }, 300);
-        }
-
-        await sleep(400);
-      }
-    }
-
-    // Final message
-    if (loadFactorDisplay) {
-      loadFactorDisplay.textContent = "Resizing complete! Load factor reduced, performance maintained";
-      await animateElement(loadFactorDisplay, {
-        backgroundColor: "#d1fae5",
-        color: "#065f46"
-      }, 500);
-    }
-  };
-
+  // Calculate load factor
   useEffect(() => {
-    const timer = setTimeout(() => {
-      runAnimations();
-    }, 1000);
+    const items = table.reduce((sum, bucket) => sum + bucket.length, 0);
+    setTotalItems(items);
+    setLoadFactor(items / tableSize);
+  }, [table, tableSize]);
+
+  // Reset table
+  const resetTable = () => {
+    setTable(Array(tableSize).fill(null).map(() => []));
+    setHighlightedIndex(-1);
+    setAnimationStep('');
+    setHashValue(-1);
+    setLastOperation('');
+    setCollisionCount(0);
+  };
+
+  // Animate hash calculation
+  const animateHashCalculation = async (key) => {
+    setIsAnimating(true);
+    setAnimationStep('Calculating hash...');
+    await new Promise(resolve => setTimeout(resolve, 800));
     
-    return () => clearTimeout(timer);
-  }, []);
+    const hash = hashFunction(key);
+    setHashValue(hash);
+    setAnimationStep(`Hash(${key}) = ${hash}`);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setHighlightedIndex(hash);
+    setAnimationStep(`Index: ${hash}`);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    return hash;
+  };
 
-  const HashSlot = ({ index, children, className = "" }) => (
-    <div className={`hash-slot relative flex items-center justify-center w-16 h-16 border-2 border-gray-300 bg-gray-50 rounded transition-all duration-300 ${className}`}>
-      <span className="absolute -top-6 text-xs font-semibold text-gray-500">{index}</span>
-      {children}
-    </div>
-  );
+  // Insert operation
+  const insertItem = async () => {
+    if (!inputKey || !inputValue) return;
+    
+    const hash = await animateHashCalculation(inputKey);
+    
+    setAnimationStep('Checking for collisions...');
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const newTable = [...table];
+    const bucket = newTable[hash];
+    
+    // Check if key already exists
+    const existingIndex = bucket.findIndex(([k]) => k === inputKey);
+    if (existingIndex !== -1) {
+      bucket[existingIndex] = [inputKey, inputValue];
+      setAnimationStep('Key updated!');
+      setLastOperation(`Updated: ${inputKey} = ${inputValue}`);
+    } else {
+      if (bucket.length > 0) {
+        setCollisionCount(prev => prev + 1);
+        setAnimationStep('Collision detected! Using chaining...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      bucket.push([inputKey, inputValue]);
+      setAnimationStep('Item inserted!');
+      setLastOperation(`Inserted: ${inputKey} = ${inputValue}`);
+    }
+    
+    setTable(newTable);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Check if resize is needed
+    const newLoadFactor = (totalItems + 1) / tableSize;
+    if (newLoadFactor > 0.75) {
+      setAnimationStep('Load factor > 0.75, resizing table...');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await resizeTable();
+    }
+    
+    setInputKey('');
+    setInputValue('');
+    setIsAnimating(false);
+    setHighlightedIndex(-1);
+    setAnimationStep('');
+    setHashValue(-1);
+  };
 
-  const HashItem = ({ keyName, value, className = "" }) => (
-    <div className={`hash-item absolute inset-1 flex flex-col items-center justify-center bg-white border border-gray-300 rounded text-xs font-semibold transition-all duration-300 opacity-0 transform scale-0 ${className}`}>
-      <div className="truncate w-full text-center">{keyName}</div>
-      <div className="text-gray-500">{value}</div>
-    </div>
-  );
+  // Search operation
+  const searchItem = async () => {
+    if (!searchKey) return;
+    
+    const hash = await animateHashCalculation(searchKey);
+    
+    setAnimationStep('Searching in bucket...');
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const bucket = table[hash];
+    const found = bucket.find(([k]) => k === searchKey);
+    
+    if (found) {
+      setAnimationStep(`Found: ${searchKey} = ${found[1]}`);
+      setLastOperation(`Found: ${searchKey} = ${found[1]}`);
+    } else {
+      setAnimationStep(`Key "${searchKey}" not found`);
+      setLastOperation(`Not found: ${searchKey}`);
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setSearchKey('');
+    setIsAnimating(false);
+    setHighlightedIndex(-1);
+    setAnimationStep('');
+    setHashValue(-1);
+  };
 
-  const ChainItem = ({ keyName, value, className = "" }) => (
-    <div className={`chain-item w-12 h-8 flex flex-col items-center justify-center bg-yellow-100 border border-yellow-400 rounded text-xs font-semibold transition-all duration-300 opacity-0 transform scale-0 ${className}`}>
-      <div className="truncate w-full text-center text-xs">{keyName}</div>
-    </div>
-  );
+  // Delete operation
+  const deleteItem = async (key) => {
+    const hash = await animateHashCalculation(key);
+    
+    setAnimationStep('Searching for item to delete...');
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const newTable = [...table];
+    const bucket = newTable[hash];
+    const itemIndex = bucket.findIndex(([k]) => k === key);
+    
+    if (itemIndex !== -1) {
+      bucket.splice(itemIndex, 1);
+      setTable(newTable);
+      setAnimationStep(`Deleted: ${key}`);
+      setLastOperation(`Deleted: ${key}`);
+    } else {
+      setAnimationStep(`Key "${key}" not found`);
+      setLastOperation(`Delete failed: ${key} not found`);
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setIsAnimating(false);
+    setHighlightedIndex(-1);
+    setAnimationStep('');
+    setHashValue(-1);
+  };
+
+  // Resize table
+  const resizeTable = async () => {
+    const oldTable = table;
+    const newSize = tableSize * 2;
+    const newTable = Array(newSize).fill(null).map(() => []);
+    
+    setTableSize(newSize);
+    setTable(newTable);
+    setAnimationStep(`Resizing to ${newSize} buckets...`);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Rehash all items
+    for (let i = 0; i < oldTable.length; i++) {
+      for (const [key, value] of oldTable[i]) {
+        const newHash = key.split('').reduce((hash, char, idx) => 
+          (hash + char.charCodeAt(0) * (idx + 1)) % newSize, 0);
+        newTable[newHash].push([key, value]);
+        
+        setHighlightedIndex(newHash);
+        setAnimationStep(`Rehashing: ${key} → index ${newHash}`);
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+    
+    setTable(newTable);
+    setAnimationStep('Resize complete!');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  // Get bucket color based on content
+  const getBucketColor = (bucket, index) => {
+    if (highlightedIndex === index) {
+      return 'bg-yellow-300 border-yellow-500 animate-pulse';
+    }
+    if (bucket.length === 0) {
+      return 'bg-gray-100 border-gray-300';
+    }
+    if (bucket.length === 1) {
+      return 'bg-green-200 border-green-400';
+    }
+    return 'bg-orange-200 border-orange-400'; // Collision
+  };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="flex justify-end mb-6">
-        <button
-          onClick={() => runAnimations()}
-          disabled={isRunning}
-          className={`font-semibold py-2 px-4 rounded shadow transition-colors ${
-            isRunning 
-              ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
-              : 'bg-blue-500 hover:bg-blue-600 text-white'
-          }`}
-        >
-          {isRunning ? '⏳ Running...' : '🔄 Reset Animation'}
-        </button>
+    <div className="w-full max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Interactive Hash Table</h2>
+        <p className="text-gray-600">Visualize insertions, searches, collisions, and dynamic resizing</p>
       </div>
 
-      <div className="mb-12">
-        <h2 className="text-4xl font-bold mb-4 text-center text-gray-800">
-          🗂️ Hash Table Operations
-        </h2>
-        <p className="text-center text-gray-600 max-w-2xl mx-auto">
-          Explore hash table operations including insertion, search, collision handling, 
-          and dynamic resizing. See how hash functions distribute data efficiently.
-        </p>
-      </div>
-
-      {/* Basic Insertion */}
-      <div className="mb-16">
-        <h3 className="text-2xl font-semibold mb-4 text-gray-800">🔸 Basic Insertion</h3>
-        <p className="text-gray-700 mb-6 max-w-3xl">
-          Items are inserted using a hash function to determine their position. 
-          Average time complexity: <code className="bg-gray-100 px-2 py-1 rounded">O(1)</code>
-        </p>
-        <div ref={insertionRef} className="bg-gray-50 p-8 rounded-lg">
-          <div className="hash-calculation mb-4 p-2 bg-gray-100 rounded text-center font-mono text-sm">
-            Hash calculation will appear here
-          </div>
-          <div className="flex justify-center space-x-2">
-            {Array.from({ length: TABLE_SIZE }, (_, i) => (
-              <HashSlot key={i} index={i}>
-                {i < 3 && <HashItem keyName={sampleData[i].key} value={sampleData[i].value} />}
-              </HashSlot>
-            ))}
+      {/* Controls */}
+      <div className="grid md:grid-cols-3 gap-4 mb-6">
+        {/* Insert */}
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
+            <span className="mr-1">➕</span> Insert
+          </h3>
+          <div className="space-y-2">
+            <input
+              type="text"
+              placeholder="Key"
+              value={inputKey}
+              onChange={(e) => setInputKey(e.target.value)}
+              className="w-full px-3 py-1 border rounded text-sm"
+              disabled={isAnimating}
+            />
+            <input
+              type="text"
+              placeholder="Value"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="w-full px-3 py-1 border rounded text-sm"
+              disabled={isAnimating}
+            />
+            <button
+              onClick={insertItem}
+              disabled={isAnimating || !inputKey || !inputValue}
+              className="w-full bg-blue-600 text-white py-1 px-3 rounded text-sm hover:bg-blue-700 disabled:opacity-50"
+            >
+              Insert
+            </button>
           </div>
         </div>
-        <p className="text-sm text-gray-500 mt-4 text-center">
-          Watch how keys are hashed to specific positions: apple→5, banana→1, cherry→2
-        </p>
-      </div>
 
-      {/* Search Operation */}
-      <div className="mb-16">
-        <h3 className="text-2xl font-semibold mb-4 text-gray-800">🔸 Search Operation</h3>
-        <p className="text-gray-700 mb-6 max-w-3xl">
-          Searching uses the same hash function to locate items directly. 
-          No need to scan through all elements! Time complexity: <code className="bg-gray-100 px-2 py-1 rounded">O(1)</code> average
-        </p>
-        <div ref={searchRef} className="bg-gray-50 p-8 rounded-lg">
-          <div className="hash-calculation mb-4 p-2 bg-gray-100 rounded text-center font-mono text-sm">
-            Search operation will appear here
-          </div>
-          <div className="flex justify-center space-x-2">
-            {Array.from({ length: TABLE_SIZE }, (_, i) => (
-              <HashSlot key={i} index={i}>
-                {i < 3 && <HashItem keyName={sampleData[i].key} value={sampleData[i].value} />}
-              </HashSlot>
-            ))}
+        {/* Search */}
+        <div className="bg-green-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-green-800 mb-2 flex items-center">
+            <span className="mr-1">🔍</span> Search
+          </h3>
+          <div className="space-y-2">
+            <input
+              type="text"
+              placeholder="Search key"
+              value={searchKey}
+              onChange={(e) => setSearchKey(e.target.value)}
+              className="w-full px-3 py-1 border rounded text-sm"
+              disabled={isAnimating}
+            />
+            <button
+              onClick={searchItem}
+              disabled={isAnimating || !searchKey}
+              className="w-full bg-green-600 text-white py-1 px-3 rounded text-sm hover:bg-green-700 disabled:opacity-50"
+            >
+              Search
+            </button>
           </div>
         </div>
-        <p className="text-sm text-gray-500 mt-4 text-center">
-          Direct access: hash("banana") = 1 → go to index 1 → found!
-        </p>
+
+        {/* Controls */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+            <span className="mr-1">🔄</span> Controls
+          </h3>
+          <div className="space-y-2">
+            <button
+              onClick={resetTable}
+              disabled={isAnimating}
+              className="w-full bg-gray-600 text-white py-1 px-3 rounded text-sm hover:bg-gray-700 disabled:opacity-50"
+            >
+              Reset Table
+            </button>
+            <button
+              onClick={() => resizeTable()}
+              disabled={isAnimating || totalItems === 0}
+              className="w-full bg-purple-600 text-white py-1 px-3 rounded text-sm hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center"
+            >
+              <span className="mr-1">⚡</span> Force Resize
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Collision Handling */}
-      <div className="mb-16">
-        <h3 className="text-2xl font-semibold mb-4 text-gray-800">🔸 Collision Handling (Chaining)</h3>
-        <p className="text-gray-700 mb-6 max-w-3xl">
-          When multiple keys hash to the same index, we use chaining (linked lists) to store multiple items. 
-          Worst case: <code className="bg-gray-100 px-2 py-1 rounded">O(n)</code>, but rare with good hash functions.
-        </p>
-        <div ref={collisionRef} className="bg-gray-50 p-8 rounded-lg">
-          <div className="hash-calculation mb-4 p-2 bg-gray-100 rounded text-center font-mono text-sm">
-            Collision handling will appear here
+      {/* Status Panel */}
+      <div className="bg-gray-50 p-4 rounded-lg mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div>
+            <span className="font-semibold text-gray-700">Table Size:</span>
+            <span className="ml-2 text-blue-600">{tableSize}</span>
           </div>
-          <div className="flex justify-center space-x-2">
-            {Array.from({ length: TABLE_SIZE }, (_, i) => (
-              <div key={i} className="relative">
-                <HashSlot index={i}>
-                  {i === 5 && <HashItem keyName="apple" value="150" />}
-                </HashSlot>
-                {i === 5 && (
-                  <div className="collision-chain absolute top-full mt-1 space-y-1">
-                    <ChainItem keyName="grape" value="95" />
-                    <ChainItem keyName="mango" value="110" />
+          <div>
+            <span className="font-semibold text-gray-700">Items:</span>
+            <span className="ml-2 text-green-600">{totalItems}</span>
+          </div>
+          <div>
+            <span className="font-semibold text-gray-700">Load Factor:</span>
+            <span className={`ml-2 ${loadFactor > 0.75 ? 'text-red-600 font-bold' : 'text-orange-600'}`}>
+              {loadFactor.toFixed(2)}
+            </span>
+          </div>
+          <div>
+            <span className="font-semibold text-gray-700">Collisions:</span>
+            <span className="ml-2 text-purple-600">{collisionCount}</span>
+          </div>
+        </div>
+        
+        {hashValue !== -1 && (
+          <div className="mt-2 text-sm">
+            <span className="font-semibold text-gray-700">Hash Value:</span>
+            <span className="ml-2 text-red-600 font-mono">{hashValue}</span>
+          </div>
+        )}
+        
+        {animationStep && (
+          <div className="mt-2 p-2 bg-blue-100 rounded text-sm text-blue-800 font-medium">
+            {animationStep}
+          </div>
+        )}
+        
+        {lastOperation && !animationStep && (
+          <div className="mt-2 p-2 bg-green-100 rounded text-sm text-green-800">
+            Last: {lastOperation}
+          </div>
+        )}
+      </div>
+
+      {/* Hash Table Visualization */}
+      <div className="mb-6">
+        <h3 className="font-semibold text-gray-800 mb-3">Hash Table Contents</h3>
+        <div className="grid grid-cols-1 gap-2">
+          {table.map((bucket, index) => (
+            <div key={index} className="flex items-center gap-3">
+              {/* Index */}
+              <div className="w-12 text-center text-sm font-mono text-gray-500">
+                {index}
+              </div>
+              
+              {/* Bucket */}
+              <div className={`min-h-12 p-2 border-2 rounded-md flex-1 transition-all duration-300 ${getBucketColor(bucket, index)}`}>
+                {bucket.length === 0 ? (
+                  <div className="text-gray-400 text-sm">empty</div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {bucket.map(([key, value], pairIndex) => (
+                      <div key={pairIndex} className="flex items-center gap-2">
+                        <div className="bg-white px-2 py-1 rounded border text-sm font-mono">
+                          {key}: {value}
+                        </div>
+                        <button
+                          onClick={() => deleteItem(key)}
+                          disabled={isAnimating}
+                          className="text-red-500 hover:text-red-700 disabled:opacity-50 text-sm"
+                          title="Delete this item"
+                        >
+                          ❌
+                        </button>
+                        {pairIndex < bucket.length - 1 && (
+                          <span className="text-gray-400">→</span>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-            ))}
-          </div>
+              
+              {/* Chain indicator */}
+              {bucket.length > 1 && (
+                <div className="text-xs text-orange-600 font-semibold">
+                  Chain ({bucket.length})
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-        <p className="text-sm text-gray-500 mt-4 text-center">
-          Multiple items at index 5: apple → grape → mango (chained together)
-        </p>
       </div>
 
-      {/* Dynamic Resizing */}
-      <div className="mb-16">
-        <h3 className="text-2xl font-semibold mb-4 text-gray-800">🔸 Dynamic Resizing</h3>
-        <p className="text-gray-700 mb-6 max-w-3xl">
-          When load factor exceeds ~0.75, the table doubles in size and all items are rehashed. 
-          This maintains O(1) performance by reducing collisions.
-        </p>
-        <div ref={resizingRef} className="bg-gray-50 p-8 rounded-lg">
-          <div className="load-factor mb-4 p-2 bg-gray-100 rounded text-center font-mono text-sm">
-            Load factor monitoring
+      {/* Legend */}
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h4 className="font-semibold text-gray-800 mb-2 flex items-center">
+          <span className="mr-1">ℹ️</span> Legend
+        </h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-gray-100 border border-gray-300 rounded"></div>
+            <span>Empty bucket</span>
           </div>
-          <div className="flex items-center justify-center space-x-8">
-            {/* Old Table */}
-            <div className="old-table">
-              <div className="text-center mb-2 font-semibold text-sm text-gray-600">Size: 7</div>
-              <div className="flex flex-col space-y-1">
-                {Array.from({ length: TABLE_SIZE }, (_, i) => (
-                  <HashSlot key={i} index={i} className="w-12 h-8">
-                    {[0, 1, 2, 6].includes(i) && (
-                      <HashItem 
-                        keyName={i === 0 ? 'apple' : i === 1 ? 'banana' : i === 2 ? 'cherry' : 'date'} 
-                        value={i === 0 ? '150' : i === 1 ? '75' : i === 2 ? '200' : '120'} 
-                      />
-                    )}
-                  </HashSlot>
-                ))}
-              </div>
-            </div>
-
-            {/* Arrow */}
-            <div className="resize-arrow opacity-0 transform translate-x-4 transition-all duration-500">
-              <div className="text-2xl">→</div>
-              <div className="text-xs text-center">Resize</div>
-            </div>
-
-            {/* New Table */}
-            <div className="new-table opacity-0 transform scale-95 transition-all duration-500">
-              <div className="text-center mb-2 font-semibold text-sm text-gray-600">Size: 13</div>
-              <div className="grid grid-cols-2 gap-1">
-                {Array.from({ length: RESIZED_TABLE_SIZE }, (_, i) => (
-                  <HashSlot key={i} index={i} className="w-10 h-6">
-                    {[3, 5, 8, 11].includes(i) && (
-                      <HashItem 
-                        keyName={i === 8 ? 'apple' : i === 3 ? 'banana' : i === 11 ? 'cherry' : 'date'} 
-                        value={i === 8 ? '150' : i === 3 ? '75' : i === 11 ? '200' : '120'} 
-                      />
-                    )}
-                  </HashSlot>
-                ))}
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-200 border border-green-400 rounded"></div>
+            <span>Single item</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-orange-200 border border-orange-400 rounded"></div>
+            <span>Collision (chain)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-300 border border-yellow-500 rounded"></div>
+            <span>Currently highlighted</span>
           </div>
         </div>
-        <p className="text-sm text-gray-500 mt-4 text-center">
-          Items are rehashed to new positions in the larger table, reducing collisions
-        </p>
+        
+        <div className="mt-3 text-xs text-gray-600">
+          <p><strong>Tips:</strong> Try inserting keys like "apple", "banana", "cherry" to see collisions. 
+          The table automatically resizes when load factor exceeds 0.75.</p>
+        </div>
       </div>
 
-      {/* Additional Info */}
-      <div className="bg-purple-50 p-6 rounded-lg">
-        <h4 className="text-lg font-semibold mb-3 text-purple-800">🔍 Hash Table Properties</h4>
-        <div className="grid md:grid-cols-2 gap-4 text-sm text-purple-700">
-          <div>
-            <strong>Average Operations:</strong> O(1) for insert, search, delete
-          </div>
-          <div>
-            <strong>Worst Case:</strong> O(n) when many collisions occur
-          </div>
-          <div>
-            <strong>Space Complexity:</strong> O(n) for storing n key-value pairs
-          </div>
-          <div>
-            <strong>Load Factor:</strong> n/m where n = items, m = table size
-          </div>
-          <div>
-            <strong>Good Hash Function:</strong> Uniform distribution, fast computation
-          </div>
-          <div>
-            <strong>Applications:</strong> Databases, caches, symbol tables, sets
-          </div>
-        </div>
+      {/* Sample Data Button */}
+      <div className="mt-4 text-center">
+        <button
+          onClick={async () => {
+            const sampleData = [
+              ['apple', '150'], ['banana', '75'], ['cherry', '200'], 
+              ['date', '120'], ['elderberry', '90'], ['fig', '80']
+            ];
+            
+            for (const [key, value] of sampleData) {
+              setInputKey(key);
+              setInputValue(value);
+              await new Promise(resolve => setTimeout(resolve, 100));
+              await insertItem();
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          }}
+          disabled={isAnimating}
+          className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+        >
+          Load Sample Data
+        </button>
       </div>
     </div>
   );

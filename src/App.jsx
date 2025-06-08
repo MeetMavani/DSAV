@@ -16,7 +16,7 @@ import Stack from './pages/DataStructures/Stack';
 import Queue from './pages/DataStructures/Queue';
 import Tree from './pages/DataStructures/Tree';
 import Graph from './pages/DataStructures/Graph';
-import Hash from './pages/DataStructures/Hash';
+import Hash from './pages/DataStructures/HashTable';
 import DFS from './pages/Algorithms/DFS';
 import BFS from './pages/Algorithms/BFS';
 
@@ -43,7 +43,7 @@ const App = () => {
         <Route path="/Queue" element={<Queue />} />
         <Route path="/Tree" element={<Tree />} />
         <Route path="/Graph" element={<Graph />} />
-        <Route path="/Hash" element={<Hash />} />
+        <Route path="/HashTable" element={<Hash />} />
         <Route path="/DFS" element={<DFS />} />
         <Route path="/BFS" element={<BFS />} />
       </Routes>

@@ -33,7 +33,7 @@ const dataStructures = [
     description: 'A graph is a collection of nodes connected by edges, used to represent networks.',
   },
   {
-    name: 'Hash Table',
+    name: 'HashTable',
     emoji: '🔑',
     description: 'A hash table stores key-value pairs using a hash function to compute the index.',
   },

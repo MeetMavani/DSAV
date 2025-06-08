@@ -1,0 +1,179 @@
+import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import StaryBackground from './StarryBackground';
+import Login from '../pages/Login';
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay,
+      duration: 0.8,
+      ease: 'easeOut'
+    }
+  })
+};
+
+const cardFloat = {
+  initial: { y: 0 },
+  animate: {
+    y: [0, -5, 0],
+    transition: {
+      repeat: Infinity,
+      repeatType: "loop",
+      duration: 4,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const Home = () => {
+  const [showLogin, setShowLogin] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const auth = getAuth();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+      if (currentUser) setShowLogin(false);
+    });
+    return () => unsubscribe();
+  }, [auth]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+    <div className="relative min-h-screen text-white overflow-hidden bg-black">
+      <StaryBackground />
+
+      {/* Nav */}
+      <nav className="relative z-20 flex justify-end items-center px-6 py-4">
+        <div className="flex items-center gap-4">
+          {user ? (
+            <>
+              <span className="text-green-400 font-extrabold text-sm">Welcome, {user.email}</span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition duration-200"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setShowLogin(true)}
+              className="bg-[#00ffff] hover:bg-[#00cccc] text-black px-6 py-2 rounded-lg font-semibold transition duration-200"
+            >
+              Login
+            </button>
+          )}
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-28 pb-20">
+        <motion.h1
+          initial="hidden"
+          animate="visible"
+          custom={0}
+          variants={fadeInUp}
+          className="text-[100px] sm:text-[120px] leading-none font-black tracking-tight bg-gradient-to-br from-cyan-300 to-white text-transparent bg-clip-text drop-shadow-xl"
+        >
+          DSAV
+        </motion.h1>
+
+        <motion.p
+          initial="hidden"
+          animate="visible"
+          custom={0.3}
+          variants={fadeInUp}
+          className="text-lg sm:text-xl max-w-2xl text-gray-300 mt-6"
+        >
+          Visualize and understand Data Structures and Algorithms in action!
+        </motion.p>
+
+        {user && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            custom={0.5}
+            variants={fadeInUp}
+            className="mt-6 px-6 py-3 bg-opacity-10 backdrop-blur-sm bg-white border border-blue-400 text-white rounded-lg shadow-md"
+          >
+            🎉 Ready to explore DSA!
+          </motion.div>
+        )}
+      </div>
+
+      {/* Info Cards */}
+      <div className="relative z-10 px-6 max-w-5xl mx-auto grid md:grid-cols-3 gap-8 pb-24">
+        {[
+          {
+            title: '📦 What are Data Structures?',
+            color: 'text-blue-400',
+            delay: 0,
+            text: "They are efficient ways of organizing and managing data like arrays, stacks, queues, and trees.",
+          },
+          {
+            title: '🧠 What are Algorithms?',
+            color: 'text-green-400',
+            delay: 0.2,
+            text: "Algorithms are step-by-step solutions like sorting, searching, or pathfinding in data.",
+          },
+          {
+            title: '🎯 Why DSAV?',
+            color: 'text-purple-400',
+            delay: 0.4,
+            text: "It’s a beautiful, animated visualizer to help you master DSA through real-time interaction.",
+          },
+        ].map((section, i) => (
+          <motion.div
+            key={i}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            custom={section.delay}
+            variants={fadeInUp}
+            whileHover={{ scale: 1.05 }}
+            className="bg-white/10 backdrop-blur-sm border border-white/20 p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+          >
+            <motion.h3 className={`text-xl font-bold mb-3 ${section.color}`}>{section.title}</motion.h3>
+            <p className="text-gray-300 text-sm leading-relaxed">{section.text}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Login Modal */}
+      <AnimatePresence>
+        {showLogin && !user && (
+          <Login onClose={() => setShowLogin(false)} />
+        )}
+      </AnimatePresence>
+    </div>
+    </>
+  );
+};
+
+export default Home;
