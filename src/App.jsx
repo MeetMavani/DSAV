@@ -12,6 +12,13 @@ import Array from './pages/DataStructures/Array'
 import LinearSearch from './pages/Algorithms/Search/LinearSearch';
 import BinarySearch from './pages/Algorithms/Search/BinarySearch';
 import LinkedList from './pages/DataStructures/LinkedList';
+import Stack from './pages/DataStructures/Stack';
+import Queue from './pages/DataStructures/Queue';
+import Tree from './pages/DataStructures/Tree';
+import Graph from './pages/DataStructures/Graph';
+import Hash from './pages/DataStructures/Hash';
+import DFS from './pages/Algorithms/DFS';
+import BFS from './pages/Algorithms/BFS';
 
 
 
@@ -32,6 +39,13 @@ const App = () => {
         <Route path="/LinearSearch" element={<LinearSearch />} />
         <Route path="/BinarySearch" element={<BinarySearch />} />
         <Route path="/LinkedList" element={<LinkedList />} />
+        <Route path="/Stack" element={<Stack />} />
+        <Route path="/Queue" element={<Queue />} />
+        <Route path="/Tree" element={<Tree />} />
+        <Route path="/Graph" element={<Graph />} />
+        <Route path="/Hash" element={<Hash />} />
+        <Route path="/DFS" element={<DFS />} />
+        <Route path="/BFS" element={<BFS />} />
       </Routes>
     </Router>
   );

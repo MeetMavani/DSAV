@@ -54,7 +54,7 @@ const PointerStructure = () => {
           onClick={resetAnimation}
           className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-1 px-3 rounded shadow"
         >
-          🔄
+          🔄 Reset
         </button>
       </div>
 
