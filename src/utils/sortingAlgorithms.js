@@ -144,8 +144,6 @@ export const quickSort = (array) => {
   return animations;
 };
 
-
-
 export const BubbleSortCodeSnippets = {
     JavaScript: `function bubbleSort(arr) {
     let len = arr.length;

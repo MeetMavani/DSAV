@@ -1,4 +1,6 @@
 import ArrayVisualization from "./ArrayVisualizations/ArrayVisualization";
+import MCQSection from '../../components/Shared/MCQSection';
+import {arraysQuestions} from '../../utils/mcq'
 
 const Array = () => {
     return ( 
@@ -147,6 +149,9 @@ const Array = () => {
           {/* Traversal Explanation */}
   
           <ArrayVisualization />
+
+          {/* MCQ Section */}
+        <MCQSection title="🧠 Array Exercises" questions={arraysQuestions} />
 
         </section>
 
