@@ -48,7 +48,7 @@ const Home = () => {
       {/* Navigation Bar */}
       <nav className="relative z-20 flex justify-between items-center px-6 py-4">
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-end gap-4">
           {user ? (
             <>
               <span className="text-green-400 font-extrabold text-sm">
@@ -92,8 +92,8 @@ const Home = () => {
         </p>
         
         {user && (
-          <div className="mt-6 p-4 bg-blue-500 bg-opacity-20 rounded-lg border border-blue-200">
-            <p className="text-gray-300 font-medium">
+          <div className="mt-6 p-4 bg-blue-200 bg-opacity-20 rounded-lg border border-blue-500">
+            <p className="text-gray-100 font-medium">
               🎉 Ready to explore Data Structures and Algorithms!
             </p>
           </div>
