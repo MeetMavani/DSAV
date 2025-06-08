@@ -46,9 +46,9 @@ const Home = () => {
       <StaryBackground />
 
       {/* Navigation Bar */}
-      <nav className="relative z-20 flex justify-between items-center px-6 py-4">
+      <nav className="relative z-20 flex justify-end items-center px-6 py-4">
         
-        <div className="flex items-end gap-4">
+        <div className="flex items-center gap-4">
           {user ? (
             <>
               <span className="text-green-400 font-extrabold text-sm">
@@ -75,7 +75,7 @@ const Home = () => {
       {/* User Status Indicator */}
       {user && (
         <div className="relative z-10 text-center py-2">
-          <div className="inline-flex items-center gap-2 bg-green-200 bg-opacity-20 text-green-400 px-4 py-2 rounded-full border border-green-500">
+          <div className="inline-flex items-center gap-2 bg-opacity-20 text-green-400 px-4 py-2 rounded-full border border-green-500">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium">You are logged in</span>
           </div>
@@ -92,7 +92,7 @@ const Home = () => {
         </p>
         
         {user && (
-          <div className="mt-6 p-4 bg-blue-200 bg-opacity-20 rounded-lg border border-blue-500">
+          <div className="mt-6 p-4 bg-opacity-20 rounded-lg border border-blue-500">
             <p className="text-gray-100 font-medium">
               🎉 Ready to explore Data Structures and Algorithms!
             </p>
