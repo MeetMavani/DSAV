@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import {
   getAuth,
   signInWithEmailLink,
@@ -18,14 +18,15 @@ const firebaseConfig = {
   appId: '1:35433946452:web:be6d250fc42cd999b53cc1'
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase (only if not already initialized)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
 
 export default function Login({ onClose }) {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSendLink = async () => {
     if (!email) {
@@ -33,17 +34,20 @@ export default function Login({ onClose }) {
       return;
     }
 
+    setLoading(true);
     const actionCodeSettings = {
-      url: 'https://dsav.vercel.app', // or your live URL
+      url: window.location.origin, // Use current domain
       handleCodeInApp: true
     };
 
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       localStorage.setItem('emailForSignIn', email);
-      setMessage('OTP link sent to your email. Check your inbox.');
+      setMessage('✅ OTP link sent to your email. Check your inbox and click the link to sign in.');
     } catch (error) {
-      setMessage(error.message);
+      setMessage(`❌ ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,16 +64,18 @@ export default function Login({ onClose }) {
           await signInWithEmailLink(auth, storedEmail, window.location.href);
           localStorage.removeItem('emailForSignIn');
           setOtpVerified(true);
-          setMessage('Login successful!');
+          setMessage('🎉 Login successful! Welcome aboard!');
+          
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
           setTimeout(() => {
             if (onClose) {
               onClose(); // Close modal if it's being used as modal
-            } else {
-              window.location.href = '/'; // Navigate to homepage if standalone
             }
-          }, 1500);
+          }, 2000);
         } catch (error) {
-          setMessage(error.message);
+          setMessage(`❌ ${error.message}`);
         }
       }
     };
@@ -97,7 +103,7 @@ export default function Login({ onClose }) {
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl font-bold"
+            className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl font-bold transition-colors"
           >
             ×
           </button>
@@ -110,28 +116,36 @@ export default function Login({ onClose }) {
             <>
               <input
                 type="email"
-                placeholder="Email Address"
+                placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mb-6 w-full px-4 py-3 bg-[#2a2a2a] text-white border-none rounded-lg focus:ring-2 focus:ring-[#00ffff] focus:outline-none"
+                className="mb-6 w-full px-4 py-3 bg-[#2a2a2a] text-white border-none rounded-lg focus:ring-2 focus:ring-[#00ffff] focus:outline-none transition-all"
+                disabled={loading}
               />
               <button
                 onClick={handleSendLink}
-                className="w-full bg-[#00ffff] text-black font-semibold py-3 rounded-lg hover:bg-[#00cccc] transition-colors duration-200"
+                disabled={loading}
+                className="w-full bg-[#00ffff] text-black font-semibold py-3 rounded-lg hover:bg-[#00cccc] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send OTP Link
+                {loading ? 'Sending...' : 'Send Login Link'}
               </button>
             </>
           ) : (
-            <p className="text-green-500 text-center font-medium text-lg">
-              You're logged in! Closing...
-            </p>
+            <div className="text-center">
+              <div className="text-6xl mb-4">🎉</div>
+              <p className="text-green-500 font-medium text-lg mb-2">
+                Successfully Logged In!
+              </p>
+              <p className="text-gray-300 text-sm">
+                Welcome to DSAV! Closing in a moment...
+              </p>
+            </div>
           )}
           
           {message && (
-            <p className="text-center text-sm mt-6 text-gray-300 italic">
-              {message}
-            </p>
+            <div className="text-center text-sm mt-6 p-3 rounded-lg bg-gray-800 bg-opacity-50">
+              <p className="text-gray-300">{message}</p>
+            </div>
           )}
         </motion.div>
       </motion.div>

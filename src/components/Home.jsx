@@ -1,10 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import StaryBackground from './StarryBackground';
 import Login from '../pages/Login';
 
 const Home = () => {
   const [showLogin, setShowLogin] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const auth = getAuth();
+
+  // Monitor authentication state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+      if (currentUser) {
+        setShowLogin(false); // Close login modal if user is authenticated
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup subscription
+  }, [auth]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen text-white overflow-hidden">
@@ -13,22 +48,57 @@ const Home = () => {
       {/* Navigation Bar */}
       <nav className="relative z-20 flex justify-between items-center px-6 py-4">
         <div className="text-2xl font-bold text-[#00ffff]">DSAV</div>
-        <button
-          onClick={() => setShowLogin(true)}
-          className="bg-[#00ffff] text-black px-6 py-2 rounded-lg font-semibold hover:bg-[#00cccc] transition-colors duration-200"
-        >
-          Login
-        </button>
+        
+        <div className="flex items-center gap-4">
+          {user ? (
+            <>
+              <span className="text-green-400 text-sm">
+                Welcome, {user.email}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setShowLogin(true)}
+              className="bg-[#00ffff] text-black px-6 py-2 rounded-lg font-semibold hover:bg-[#00cccc] transition-colors duration-200"
+            >
+              Login
+            </button>
+          )}
+        </div>
       </nav>
 
+      {/* User Status Indicator */}
+      {user && (
+        <div className="relative z-10 text-center py-2">
+          <div className="inline-flex items-center gap-2 bg-green-500 bg-opacity-20 text-green-400 px-4 py-2 rounded-full border border-green-500">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium">You are logged in</span>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-20 pb-16">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-12 pb-16">
         <h1 className="text-5xl font-extrabold mb-4 tracking-wide drop-shadow-md">
           DSAV
         </h1>
         <p className="text-lg max-w-2xl text-gray-300">
           Visualize and understand Data Structures and Algorithms in action!
         </p>
+        
+        {user && (
+          <div className="mt-6 p-4 bg-blue-500 bg-opacity-20 rounded-lg border border-blue-500">
+            <p className="text-blue-300 font-medium">
+              🎉 Ready to explore Data Structures and Algorithms!
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Info Sections */}
@@ -65,7 +135,7 @@ const Home = () => {
 
       {/* Login Modal */}
       <AnimatePresence>
-        {showLogin && (
+        {showLogin && !user && (
           <Login onClose={() => setShowLogin(false)} />
         )}
       </AnimatePresence>
